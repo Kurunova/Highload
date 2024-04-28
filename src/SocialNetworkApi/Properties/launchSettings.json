@@ -1,0 +1,31 @@
+﻿{
+  "profiles": {
+    "SocialNetworkApi": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7015;http://localhost:5015",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "HTTP_PORT": "7015",
+        "DatabaseSettings__ConnectionString": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true"
+      }
+    },
+    "SocialNetworkApi.DbMigrator": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "launchUrl": "swagger",
+      "commandLineArgs": "migrateUp",
+      "applicationUrl": "https://localhost:7015;http://localhost:5015",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "HTTP_PORT": "7015",
+        "RUN_OPTIONS": "migrateUp",
+        //"RUN_OPTIONS": "migrateDown 0",
+        "DatabaseSettings__ConnectionString": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true"
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+version: "3.9"
+
+volumes:
+  socialnetwork-db-1:
+    name: socialnetwork-db-1
+
+services:
+  socialnetwork-1:
+    build:
+      context: ./src
+      dockerfile: SocialNetworkApi/Dockerfile
+    container_name: socialnetwork-1
+    depends_on:
+      - socialnetwork-db-1
+    environment:
+      - HTTP_PORT=8080
+      - DatabaseSettings__ConnectionString=Server=socialnetwork-db-1;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
+      - Serilog__Using__0=Serilog.Sinks.Console
+      - Serilog__MinimumLevel=Debug
+      - Serilog__WriteTo__0__Name=Console   
+    ports:
+      - "5001:8080"
+    networks:
+      - custom-network
+
+  socialnetwork-dbmigrator-1:
+    build:
+      context: ./src
+      dockerfile: SocialNetworkApi/Dockerfile
+    container_name: socialnetwork-dbmigrator-1
+    depends_on:
+      - socialnetwork-db-1
+    environment:
+      - HTTP_PORT=8080
+      - RUN_OPTIONS=migrateUp
+      - DatabaseSettings__ConnectionString=Server=socialnetwork-db-1;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
+      - Serilog__Using__0=Serilog.Sinks.Console
+      - Serilog__MinimumLevel=Debug
+      - Serilog__WriteTo__0__Name=Console
+    ports:
+      - "5002:8080"
+    networks:
+      - custom-network
+
+  socialnetwork-db-1:
+    image: postgres:latest
+    container_name: socialnetwork-db-1
+    environment:
+      - POSTGRES_DB=socialnetwork
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+    ports:
+      - "5401:5432"
+    volumes:
+      - socialnetwork-db-1:/var/lib/postgresql/data
+    networks:
+      - custom-network
+
+networks:
+  custom-network:
+    driver: bridge
