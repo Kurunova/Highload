@@ -14,7 +14,9 @@ services:
       - socialnetwork-db-1
     environment:
       - HTTP_PORT=8080
-      - DatabaseSettings__ConnectionString=Server=socialnetwork-db-1;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
+      - DatabaseSettings__ConnectionString=Server=socialnetwork-db-1;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
+      - Jwt__Key=JwtSecretKey
+      - Jwt__Issuer=socialnetwork.com
       - Serilog__Using__0=Serilog.Sinks.Console
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console   

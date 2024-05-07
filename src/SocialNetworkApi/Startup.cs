@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
+using SocialNetworkApi.Extensions;
 
 namespace SocialNetworkApi;
 
@@ -21,6 +22,7 @@ public sealed class Startup
 	{
 		serviceCollection.AddDatabase(_configuration);
 		serviceCollection.AddApplication(_configuration);
+		serviceCollection.AddJwtAuthorization(_configuration);
 
 		serviceCollection.AddControllers();
 		serviceCollection.AddEndpointsApiExplorer();

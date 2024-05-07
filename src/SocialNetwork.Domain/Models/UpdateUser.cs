@@ -2,10 +2,8 @@
 
 namespace SocialNetwork.Domain.Models;
 
-public class CreateUser
+public class UpdateUser
 {
-	public string Login { get; set; }
-	public string Password { get; set; }
 	public string FirstName { get; set; }
 	public string SecondName { get; set; }
 	public DateTime Birthdate { get; set; }

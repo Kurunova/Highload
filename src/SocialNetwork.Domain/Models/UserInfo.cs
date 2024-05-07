@@ -2,10 +2,9 @@
 
 namespace SocialNetwork.Domain.Models;
 
-public class CreateUser
+public class UserInfo
 {
-	public string Login { get; set; }
-	public string Password { get; set; }
+	public long Id { get; set; }
 	public string FirstName { get; set; }
 	public string SecondName { get; set; }
 	public DateTime Birthdate { get; set; }

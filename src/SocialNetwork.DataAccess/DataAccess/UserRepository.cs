@@ -11,6 +11,18 @@ public class UserRepository : BaseRepository, IUserRepository
 	{
 	}
 
+	public async Task<User> GetByLogin(string login, CancellationToken cancellationToken)
+	{
+		var sql = "SELECT * FROM Users WHERE Login = @login";
+		
+		var user = await QuerySingleOrDefaultAsync<User>(sql, new
+		{
+			login = login
+		}, cancellationToken);
+		
+		return user;
+	}
+
 	public async Task<User> GetById(long id, CancellationToken cancellationToken)
 	{
 		var sql = "SELECT * FROM Users WHERE Id = @id";
@@ -23,23 +35,22 @@ public class UserRepository : BaseRepository, IUserRepository
 		return user;
 	}
 
-	public async Task<long> Create(
-		string firstName, 
-		string secondName, 
-		DateTime birthdate, 
-		string biography, 
-		string city, 
-		CancellationToken cancellationToken)
+	public async Task<long> Create(User user, CancellationToken cancellationToken)
 	{
-		string sql = @"INSERT INTO Users (FirstName, SecondName, Birthdate, Biography, City) VALUES (@firstName, @secondName, @birthdate, @biography, @city) RETURNING Id";
+		string sql = @"INSERT INTO Users (Login, PasswordHash, Salt, FirstName, SecondName, Birthdate, Gender, City, Hobbies) 
+			VALUES (@login, @passwordHash, @salt, @firstName, @secondName, @birthdate, CAST(@gender as public.gender_type), @city, @hobbies) RETURNING Id";
 		
 		var insertedId = await QuerySingleOrDefaultAsync<long>(sql, new
 		{
-			firstName = firstName,
-			secondName = secondName,
-			birthdate = birthdate,
-			biography = biography,
-			city = city
+			login = user.Login,
+			passwordHash = user.PasswordHash,
+			salt = user.Salt,
+			firstName = user.FirstName,
+			secondName = user.SecondName,
+			birthdate = user.Birthdate,
+			gender = user.Gender.ToString(),
+			city = user.City,
+			hobbies = user.Hobbies
 		}, cancellationToken);
 		
 		return insertedId;
@@ -47,14 +58,29 @@ public class UserRepository : BaseRepository, IUserRepository
 
 	public async Task Update(User user, CancellationToken cancellationToken)
 	{
-		string sql = @"UPDATE Users SET FirstName = @FirstName, SecondName = @SecondName, Birthdate = @Birthdate, Biography = @Biography, City = @City WHERE Id = @Id";
+		string sql = @"UPDATE Users 
+			SET FirstName = @firstName, 
+			    SecondName = @secondName, 
+			    Birthdate = @birthdate, 
+			    Gender = CAST(@gender as public.gender_type), 
+			    City = @city,
+			    Hobbies = @hobbies
+			WHERE Id = @id";
 		
-		await ExecuteAsync(sql, user, cancellationToken);
+		await ExecuteAsync(sql, new
+		{
+			firstName = user.FirstName,
+			secondName = user.SecondName,
+			birthdate = user.Birthdate,
+			gender = user.Gender.ToString(),
+			city = user.City,
+			hobbies = user.Hobbies
+		}, cancellationToken);
 	}
 
 	public async Task Delete(long id, CancellationToken cancellationToken)
 	{
-		string sql = @"DELETE FROM Users WHERE Id = @Id";
+		string sql = @"DELETE FROM Users WHERE Id = @id";
 		
 		await ExecuteAsync(sql, new
 		{
