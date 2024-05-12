@@ -1,0 +1,101 @@
+{
+    "info": {
+        "_postman_id": "eb5a9fd1-5c73-469a-bc8c-f0c9a6a93775",
+        "name": "SocialNetwork API",
+        "description": "API collection for Social Network app including user management and authentication.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Register",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"login\": \"lk\",\n  \"password\": \"132\",\n  \"firstName\": \"Name\",\n  \"secondName\": \"Surname\",\n  \"birthdate\": \"2000-05-12\",\n  \"gender\": 0,\n  \"city\": \"Moscow\",\n  \"hobbies\": \"No\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{url}}/users/register",
+                    "host": [
+                        "{{url}}"
+                    ],
+                    "path": [
+                        "users",
+                        "register"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Login",
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"login\": \"lk\",\n  \"password\": \"123\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "{{url}}/users/login",
+                    "host": [
+                        "{{url}}"
+                    ],
+                    "path": [
+                        "users",
+                        "login"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Get User",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{url}}/users/get/{{userId}}",
+                    "host": [
+                        "{{url}}"
+                    ],
+                    "path": [
+                        "users",
+                        "get",
+                        "{{userId}}"
+                    ],
+                    "variable": [
+                        {
+                            "key": "userId",
+                            "value": "1"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "url",
+            "value": "http://localhost:7015"
+        },
+        {
+            "key": "userId",
+            "value": "1"
+        }
+    ]
+}
