@@ -10,8 +10,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "HTTP_PORT": "7015",
         "DatabaseSettings__ConnectionString": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true",
-        "Jwt__Key": "JwtSecretKey",
-        "Jwt__Issuer": "socialnetwork.com"
+        "Jwt__Key": "vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=",
+        "Jwt__Issuer": "socialnetwork.com",
+        "Jwt__Audience": "socialnetwork.com"
       }
     },
     "SocialNetworkApi.DbMigrator": {
@@ -27,8 +28,9 @@
         "RUN_OPTIONS": "migrateUp",
         //"RUN_OPTIONS": "migrateDown 0",
         "DatabaseSettings__ConnectionString": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true",
-        "Jwt__Key": "JwtSecretKey",
-        "Jwt__Issuer": "socialnetwork.com"
+        "Jwt__Key": "vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=",
+        "Jwt__Issuer": "socialnetwork.com",
+        "Jwt__Audience": "socialnetwork.com"
       }
     }
   }

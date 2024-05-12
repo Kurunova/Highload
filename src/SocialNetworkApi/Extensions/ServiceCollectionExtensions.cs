@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SocialNetworkApi.Configurations;
 
 namespace SocialNetworkApi.Extensions;
 
@@ -8,6 +9,16 @@ public static class ServiceCollectionExtensions
 {
 	public static IServiceCollection AddJwtAuthorization(this IServiceCollection serviceCollection, IConfiguration configuration)
 	{
+		var jwtSettingsSection = configuration.GetSection("Jwt");
+		if (jwtSettingsSection == null)
+			throw new InvalidOperationException("JWT settings section is missing in the configuration.");
+		
+		var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
+		if (jwtSettings == null)
+			throw new InvalidOperationException("JWT settings cannot be loaded from the section.");
+		
+		serviceCollection.Configure<JwtSettings>(jwtSettingsSection);
+		
 		serviceCollection.AddAuthentication(options =>
 			{
 				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -21,9 +32,9 @@ public static class ServiceCollectionExtensions
 					ValidateAudience = true,
 					ValidateLifetime = true,
 					ValidateIssuerSigningKey = true,
-					ValidIssuer = configuration.GetSection("Jwt:Issuer").Get<string>(),
-					ValidAudience = configuration.GetSection("Jwt:Issuer").Get<string>(),
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("Jwt:Key").Get<string>()))
+					ValidIssuer = jwtSettings.Issuer,
+					ValidAudience = jwtSettings.Audience,
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
 				};
 			});
 		return serviceCollection;
