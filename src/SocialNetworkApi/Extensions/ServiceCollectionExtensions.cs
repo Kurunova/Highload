@@ -2,11 +2,19 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SocialNetworkApi.Configurations;
+using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+	public static IServiceCollection AddJwt(this IServiceCollection serviceCollection, IConfiguration configuration)
+	{
+		serviceCollection.AddTransient<JwtTokenService>();
+		serviceCollection.AddJwtAuthorization(configuration);
+		return serviceCollection;
+	}
+
 	public static IServiceCollection AddJwtAuthorization(this IServiceCollection serviceCollection, IConfiguration configuration)
 	{
 		var jwtSettingsSection = configuration.GetSection("Jwt");

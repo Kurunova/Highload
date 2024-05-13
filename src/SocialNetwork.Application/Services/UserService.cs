@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Entities;
@@ -19,6 +20,9 @@ public class UserService : IUserService
 
 	public async Task<UserInfo> Create(CreateUser createUser, CancellationToken cancellationToken)
 	{
+		if (string.IsNullOrWhiteSpace(createUser.Login) || string.IsNullOrWhiteSpace(createUser.Password))
+			throw new ValidationException($"Invalid input data");
+		
 		byte[] salt = RandomNumberGenerator.GetBytes(128 / 8);
 		string passwordHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
 			password: createUser.Password,
@@ -31,9 +35,9 @@ public class UserService : IUserService
 		{
 			Login = createUser.Login,
 			PasswordHash = passwordHash,
-			Salt = salt,
+			Salt =  Convert.ToBase64String(salt),
 			FirstName = createUser.FirstName, 
-			SecondName = createUser.SecondName,
+			LastName = createUser.LastName,
 			Birthdate = createUser.Birthdate,
 			Gender = createUser.Gender,
 			City = createUser.City, 
@@ -49,11 +53,14 @@ public class UserService : IUserService
 	
 	public async Task<UserInfo> Login(LoginUser loginUser, CancellationToken cancellationToken)
 	{
+		if (string.IsNullOrWhiteSpace(loginUser.Login) || string.IsNullOrWhiteSpace(loginUser.Password))
+			throw new ValidationException($"Invalid input data");
+		
 		var user = await _userRepository.GetByLogin(loginUser.Login, cancellationToken);
 		
 		string passwordHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
 			password: loginUser.Password,
-			salt: user.Salt,
+			salt:  Convert.FromBase64String(user.Salt),
 			prf: KeyDerivationPrf.HMACSHA256,
 			iterationCount: 100000,
 			numBytesRequested: 256 / 8));
@@ -64,8 +71,18 @@ public class UserService : IUserService
 		return user.ToUserInfo();
 	}
 
+	public async Task<UserInfo[]> Search(SearchUser searchUser, CancellationToken cancellationToken)
+	{
+		var users = await _userRepository.Search(searchUser.FirstName, searchUser.LastName, cancellationToken);
+		
+		return users.Select(p => p.ToUserInfo()).ToArray();
+	}
+
 	public async Task<UserInfo> GetById(long id, CancellationToken cancellationToken)
 	{
+		if (id < 0)
+			throw new ValidationException($"Invalid input data");
+		
 		var user = await _userRepository.GetById(id, cancellationToken);
 		
 		return user.ToUserInfo();

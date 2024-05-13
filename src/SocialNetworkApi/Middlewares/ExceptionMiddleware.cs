@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using SocialNetwork.Application.Exceptions;
 
 namespace SocialNetworkApi.Middlewares;
 
@@ -26,7 +27,8 @@ public class ExceptionMiddleware
 	private static Task HandleExceptionAsync(HttpContext context, Exception exception)
 	{
 		var code = HttpStatusCode.InternalServerError; 
-		if (exception is ArgumentException) code = HttpStatusCode.BadRequest;
+		if (exception is ArgumentException or ValidationException) 
+			code = HttpStatusCode.BadRequest;
 
 		var result = System.Text.Json.JsonSerializer.Serialize(new { error = exception.Message });
 		context.Response.ContentType = "application/json";

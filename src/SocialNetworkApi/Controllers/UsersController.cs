@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using SocialNetwork.Domain.Models;
 using SocialNetwork.Domain.Services;
 using SocialNetworkApi.Configurations;
+using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Controllers;
 
@@ -16,13 +17,13 @@ namespace SocialNetworkApi.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-	private readonly JwtSettings _jwtSettings;
 	private readonly IUserService _userService;
+	private readonly JwtTokenService _jwtTokenService;
 	
-	public UsersController(IOptions<JwtSettings> jwtSettings, IUserService userService)
+	public UsersController(IUserService userService, JwtTokenService jwtTokenService)
 	{
-		_jwtSettings = jwtSettings.Value;
 		_userService = userService;
+		_jwtTokenService = jwtTokenService;
 	}
 
 	[HttpPost("register")]
@@ -40,7 +41,7 @@ public class UsersController : ControllerBase
 		if (logined?.Id == null)
 			return Unauthorized();
 
-		var token = GenerateJwtToken(logined);
+		var token = _jwtTokenService.GenerateJwtToken(logined);
 		return Ok(new { Token = token });
 	}
 	
@@ -52,30 +53,15 @@ public class UsersController : ControllerBase
 		return Ok(user);
 	}
 	
-	private string GenerateJwtToken(UserInfo userInfo)
+	[HttpGet("search")]
+	public async Task<IActionResult> Search([FromQuery] string firstName, [FromQuery] string lastName)
 	{
-		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
-		var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-		var claims = new List<Claim>
+		var users = await _userService.Search(new SearchUser { FirstName = firstName, LastName = lastName }, CancellationToken.None);
+		if (users == null || !users.Any())
 		{
-			new(JwtRegisteredClaimNames.Sub, userInfo.Id.ToString()),
-			new(JwtRegisteredClaimNames.GivenName, userInfo.FirstName),
-			new(JwtRegisteredClaimNames.FamilyName, userInfo.SecondName),
-			new("birthdate", userInfo.Birthdate.ToString("yyyy-MM-dd")),
-			new("city", userInfo.City),
-			new("hobbies", userInfo.Hobbies)
-		};
-		
-		var token = new JwtSecurityToken(
-			_jwtSettings.Issuer,
-			_jwtSettings.Audience,
-			claims: claims,
-			expires: DateTime.Now.AddSeconds(TimeSpan.FromSeconds(_jwtSettings.ExpirationSeconds).Seconds),
-			signingCredentials: credentials);
+			return NotFound("No users found matching the criteria.");
+		}
 
-		var jwtSecurityTokenHandler =  new JwtSecurityTokenHandler();
-		var result = jwtSecurityTokenHandler.WriteToken(token);
-		return result;
+		return Ok(users);
 	}
 }

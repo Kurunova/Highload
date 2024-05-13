@@ -24,7 +24,7 @@ public sealed class Startup
 	{
 		serviceCollection.AddDatabase(_configuration);
 		serviceCollection.AddApplication(_configuration);
-		serviceCollection.AddJwtAuthorization(_configuration);
+		serviceCollection.AddJwt(_configuration);
 
 		serviceCollection.AddControllers();
 		serviceCollection.AddEndpointsApiExplorer();

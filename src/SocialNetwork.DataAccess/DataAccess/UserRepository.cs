@@ -35,6 +35,22 @@ public class UserRepository : BaseRepository, IUserRepository
 		return user;
 	}
 
+	public async Task<User[]> Search(string firstName, string lastName, CancellationToken cancellationToken)
+	{
+		var sql = "SELECT * " +
+		          "FROM Users " +
+		          "WHERE FirstName ILIKE @firstName || '%' and LastName ILIKE @lastName || '%'" +
+		          "ORDER BY Id";
+		
+		var users = await QueryAsync<User>(sql, new
+		{
+			firstName = firstName,
+			lastName = lastName
+		}, cancellationToken);
+		
+		return users.ToArray();
+	}
+
 	public async Task<long> Create(User user, CancellationToken cancellationToken)
 	{
 		string sql = @"INSERT INTO Users (Login, PasswordHash, Salt, FirstName, SecondName, Birthdate, Gender, City, Hobbies) 
@@ -46,7 +62,7 @@ public class UserRepository : BaseRepository, IUserRepository
 			passwordHash = user.PasswordHash,
 			salt = user.Salt,
 			firstName = user.FirstName,
-			secondName = user.SecondName,
+			secondName = user.LastName,
 			birthdate = user.Birthdate,
 			gender = user.Gender.ToString(),
 			city = user.City,
@@ -70,7 +86,7 @@ public class UserRepository : BaseRepository, IUserRepository
 		await ExecuteAsync(sql, new
 		{
 			firstName = user.FirstName,
-			secondName = user.SecondName,
+			secondName = user.LastName,
 			birthdate = user.Birthdate,
 			gender = user.Gender.ToString(),
 			city = user.City,

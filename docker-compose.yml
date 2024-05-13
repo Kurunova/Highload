@@ -37,6 +37,9 @@ services:
       - HTTP_PORT=8080
       - RUN_OPTIONS=migrateUp
       - DatabaseSettings__ConnectionString=Server=socialnetwork-db-1;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
+      - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
+      - Jwt__Issuer=socialnetwork.com
+      - Jwt__Audience=socialnetwork.com
       - Serilog__Using__0=Serilog.Sinks.Console
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console

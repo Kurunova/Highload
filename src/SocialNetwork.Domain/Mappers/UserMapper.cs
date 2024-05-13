@@ -11,7 +11,7 @@ public static class UserMapper
 		{
 			Id = user.Id,
 			FirstName = user.FirstName,
-			SecondName = user.SecondName,
+			LastName = user.LastName,
 			Birthdate = user.Birthdate,
 			Gender = user.Gender,
 			City = user.City,
