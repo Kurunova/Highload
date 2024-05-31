@@ -2,7 +2,7 @@
     "info": {
         "_postman_id": "eb5a9fd1-5c73-469a-bc8c-f0c9a6a93775",
         "name": "SocialNetwork API",
-        "description": "API collection for Social Network app including user management and authentication.",
+        "description": "API collection for Social Network app including user management, authentication, and search functionality.",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -86,6 +86,35 @@
                     ]
                 }
             }
+        },
+        {
+            "name": "Search",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{url}}/users/search?firstName={{firstName}}&lastName={{lastName}}",
+                    "host": [
+                        "{{url}}"
+                    ],
+                    "path": [
+                        "users",
+                        "search"
+                    ],
+                    "query": [
+                        {
+                            "key": "firstName",
+                            "value": "{{firstName}}",
+                            "description": "First name of the user to search."
+                        },
+                        {
+                            "key": "lastName",
+                            "value": "{{lastName}}",
+                            "description": "Last name of the user to search."
+                        }
+                    ]
+                }
+            }
         }
     ],
     "variable": [
@@ -95,7 +124,18 @@
         },
         {
             "key": "userId",
-            "value": "1"
+            "value": "1",
+            "description": "Default user ID to use in Get User requests."
+        },
+        {
+            "key": "firstName",
+            "value": "",
+            "description": "First name for searching users."
+        },
+        {
+            "key": "lastName",
+            "value": "",
+            "description": "Last name for searching users."
         }
     ]
 }

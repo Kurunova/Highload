@@ -3,30 +3,34 @@ using System.Text;
 using Bogus;
 using Bogus.DataSets;
 using FluentMigrator;
+using FluentMigrator.Expressions;
+using FluentMigrator.Infrastructure;
+using SocialNetwork.DataAccess.Services;
 using SocialNetwork.Domain.Entities;
 
-namespace Ozon.Route256.Practice.OrdersService.Migrations;
+namespace SocialNetwork.DataAccess.Migrations;
 
 [Migration(3, "FillData")]
-public class FillDataMigration : Migration
+public class FillDataMigration : CustomMigration
 {
 	private readonly Faker _faker = new("ru");
-	
-	public override void Up()
-	{
-		for (int i = 0; i < 100000; i++)
-		{
-			var sqlBuilder = new StringBuilder();
 
-			sqlBuilder.AppendLine("INSERT INTO public.users (login, passwordHash, salt, firstname, lastname, birthdate, gender, city, hobbies) VALUES");
-		
+	protected override void GetUp(IMigrationContext context)
+	{
+		var sqlBuilder = new StringBuilder();
+		int totalRecordsCount = 1000000;
+		int insertSize = 100;
+		var operationsCount = totalRecordsCount / insertSize;
+
+		for (int operationsCounter = 0; operationsCounter < operationsCount; operationsCounter++)
+		{
 			var valuesList = new List<string>();
-			for (int j = 0; j < 10; j++)
+			for (int insertCounter = 0; insertCounter < insertSize; insertCounter++)
 			{
-				var uniq = i * 10 + j;
+				var uniq = operationsCounter * insertSize + insertCounter;
 				var genders = Enum.GetValues(typeof(GenderType)).Cast<GenderType>().Where(g => g != GenderType.None).ToArray();
 				var gender = _faker.PickRandom(genders);
-			
+
 				var login = $"{_faker.Internet.UserName()}_{uniq}";
 				var passwordHash = "kjSTuVknhtcexD3ULD7wRQe9ZKRX+7prvGMJ8QiKXrg=";
 				var salt = "mb4B6/dvmrBujt6KzeHa7w==";
@@ -44,16 +48,19 @@ public class FillDataMigration : Migration
 				               $"'{city}', '{hobbies}')");
 			}
 
+			sqlBuilder.AppendLine("INSERT INTO public.users (login, passwordHash, salt, firstname, lastname, birthdate, gender, city, hobbies) VALUES");
 			sqlBuilder.AppendLine(string.Join(",\n", valuesList));
 			sqlBuilder.AppendLine(";");
-		
-			Execute.Sql(sqlBuilder.ToString());
+
+			var sqlStatement = sqlBuilder.ToString();
+			context.Expressions.Add(new ExecuteSqlStatementExpression { SqlStatement = sqlStatement });
+			sqlBuilder.Clear();
 		}
 	}
 
-	public override void Down()
+	protected override void GetDown(IMigrationContext context)
 	{
-		Execute.Sql(@"
-		");
+		var sqlStatement = @"DELETE FROM public.users;";
+		context.Expressions.Add(new ExecuteSqlStatementExpression { SqlStatement = sqlStatement });
 	}
 }

@@ -3,6 +3,8 @@ version: "3.9"
 volumes:
   socialnetwork-db-1:
     name: socialnetwork-db-1
+  influxdb-data:
+  grafana-data:    
 
 services:
   socialnetwork-1:
@@ -59,6 +61,33 @@ services:
       - "5401:5432"
     volumes:
       - socialnetwork-db-1:/var/lib/postgresql/data
+    networks:
+      - custom-network
+      
+  influxdb:
+    image: influxdb:latest
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=LoadTestDb
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=adminpassword
+    ports:
+      - "8086:8086"
+    networks:
+      - custom-network
+      
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - influxdb
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=adminpassword
+    ports:
+      - "3000:3000"      
     networks:
       - custom-network
 

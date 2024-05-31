@@ -1,6 +1,6 @@
 ﻿using FluentMigrator;
 
-namespace Ozon.Route256.Practice.OrdersService.Migrations;
+namespace SocialNetwork.DataAccess.Migrations;
 
 [Migration(2, "AlterTable")]
 public class AlterTableMigration : Migration
