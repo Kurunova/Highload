@@ -1,14 +1,7 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using SocialNetwork.Domain.Models;
 using SocialNetwork.Domain.Services;
-using SocialNetworkApi.Configurations;
 using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Controllers;
@@ -57,10 +50,8 @@ public class UsersController : ControllerBase
 	public async Task<IActionResult> Search([FromQuery] string firstName, [FromQuery] string lastName)
 	{
 		var users = await _userService.Search(new SearchUser { FirstName = firstName, LastName = lastName }, CancellationToken.None);
-		if (users == null || !users.Any())
-		{
-			return NotFound("No users found matching the criteria.");
-		}
+		if (!users.Any())
+			return Ok("No users found matching the criteria.");
 
 		return Ok(users);
 	}

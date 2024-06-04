@@ -72,6 +72,8 @@ services:
       - INFLUXDB_DB=LoadTestDb
       - INFLUXDB_ADMIN_USER=admin
       - INFLUXDB_ADMIN_PASSWORD=adminpassword
+#      - INFLUXDB_ORGANIZATION_NAME=socialnetwork - setup in ui
+#      - INFLUXDB_BUCKET_NAME=loadtest - setup in ui
     ports:
       - "8086:8086"
     networks:
