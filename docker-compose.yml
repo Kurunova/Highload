@@ -4,7 +4,8 @@ volumes:
   socialnetwork-db-1:
     name: socialnetwork-db-1
   influxdb-data:
-  grafana-data:    
+  grafana-data:
+  prometheus-data:
 
 services:
   socialnetwork-1:
@@ -63,7 +64,47 @@ services:
       - socialnetwork-db-1:/var/lib/postgresql/data
     networks:
       - custom-network
-      
+
+  # exporter for docker container metrics
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - custom-network
+
+  # exporter for db metrics
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    environment:
+      DATA_SOURCE_NAME: "postgresql://test:test@socialnetwork-db-1:5432/socialnetwork?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - socialnetwork-db-1
+    networks:
+      - custom-network
+
+  # db for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - cadvisor
+      - socialnetwork-1
+    networks:
+      - custom-network
+
   influxdb:
     image: influxdb:latest
     volumes:

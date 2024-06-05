@@ -14,9 +14,7 @@ CREATE INDEX IF NOT EXISTS idx_users_lastname_trgm ON Users USING GIN (LastName 
 -- delete GIN index
 DROP INDEX IF EXISTS idx_users_firstname_trgm;
 DROP INDEX IF EXISTS idx_users_lastname_trgm;
-IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexdef LIKE '%gin_trgm_ops%') THEN
-	DROP EXTENSION IF EXISTS pg_trgm;
-END IF;
+DROP EXTENSION IF EXISTS pg_trgm;
 
 -- update index statistic 
 
