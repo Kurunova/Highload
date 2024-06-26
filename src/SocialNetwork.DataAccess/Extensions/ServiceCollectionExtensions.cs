@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
 {
 	public static IServiceCollection AddMigration(this IServiceCollection serviceCollection, IConfiguration configuration)
 	{
-		var connectionString = configuration.GetSection("DatabaseSettings:ConnectionString").Value;
+		var connectionString = configuration.GetSection("DatabaseSettings:MasterConnectionString").Value;
 		serviceCollection.AddFluentMigratorCore()
 			.ConfigureRunner(builder => builder
 				.AddPostgres().ScanIn(typeof(ServiceCollectionExtensions).Assembly)

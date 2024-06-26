@@ -7,15 +7,31 @@ namespace SocialNetwork.DataAccess.DataAccess;
 
 public class PostgresConnectionFactory : IPostgresConnectionFactory
 {
-	private readonly string _connectionString;
+	private readonly string _masterConnectionString;
+	private readonly List<string> _replicaConnectionStrings;
+	private int _lastUsedReplicaIndex = 0;
 
 	public PostgresConnectionFactory(IOptions<DatabaseSettings> databaseSettings)
 	{
-		_connectionString = databaseSettings?.Value?.ConnectionString ?? throw new ArgumentException("Connection string is mandatory");
+		_masterConnectionString = databaseSettings?.Value?.MasterConnectionString ?? throw new ArgumentException("Master connection string is mandatory");
+		_replicaConnectionStrings = databaseSettings?.Value?.ReplicaConnectionStrings ?? throw new ArgumentException("Replica connection strings are mandatory");
 	}
 
-	public NpgsqlConnection CreateConnection()
+	public NpgsqlConnection CreateMasterConnection()
 	{
-		return new NpgsqlConnection(_connectionString);
+		return new NpgsqlConnection(_masterConnectionString);
+	}
+
+	public NpgsqlConnection CreateReplicaConnection()
+	{
+		var replicaConnectionString = GetNextReplicaConnectionString();
+		return new NpgsqlConnection(replicaConnectionString);
+	}
+
+	private string GetNextReplicaConnectionString()
+	{
+		var replicaConnectionString = _replicaConnectionStrings[_lastUsedReplicaIndex];
+		_lastUsedReplicaIndex = (_lastUsedReplicaIndex + 1) % _replicaConnectionStrings.Count;
+		return replicaConnectionString;
 	}
 }

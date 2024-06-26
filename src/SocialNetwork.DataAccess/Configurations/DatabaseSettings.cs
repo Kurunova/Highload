@@ -2,5 +2,6 @@
 
 public class DatabaseSettings
 {
-	public string ConnectionString { get; set; }
+	public string MasterConnectionString { get; set; }
+	public List<string> ReplicaConnectionStrings { get; set; }
 }

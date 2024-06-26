@@ -9,7 +9,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "HTTP_PORT": "7015",
-        "DatabaseSettings__ConnectionString": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true",
+        "DatabaseSettings__MasterConnectionString": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true",
+        "DatabaseSettings__ReplicaConnectionStrings__0": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true",
+        "DatabaseSettings__ReplicaConnectionStrings__1": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true",
         "Jwt__Key": "vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=",
         "Jwt__Issuer": "socialnetwork.com",
         "Jwt__Audience": "socialnetwork.com"
@@ -27,7 +29,7 @@
         "HTTP_PORT": "7015",
         "RUN_OPTIONS": "migrateUp",
         //"RUN_OPTIONS": "migrateDown 0",
-        "DatabaseSettings__ConnectionString": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true",
+        "DatabaseSettings__MasterConnectionString": "Server=localhost;Port=5401;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true",
         "Jwt__Key": "vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=",
         "Jwt__Issuer": "socialnetwork.com",
         "Jwt__Audience": "socialnetwork.com"

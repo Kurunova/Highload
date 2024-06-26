@@ -4,5 +4,6 @@ namespace SocialNetwork.Domain.DataAccess;
 
 public interface IPostgresConnectionFactory
 {
-	NpgsqlConnection CreateConnection();
+	NpgsqlConnection CreateMasterConnection();
+	NpgsqlConnection CreateReplicaConnection();
 }

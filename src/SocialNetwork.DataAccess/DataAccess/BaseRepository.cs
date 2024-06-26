@@ -22,7 +22,7 @@ public class BaseRepository
 	{
 		try
 		{
-			await using var connection = ConnectionFactory.CreateConnection();
+			await using var connection = ConnectionFactory.CreateReplicaConnection();
 			await connection.OpenAsync(cancellationToken);
 		
 			var result = await connection.QueryAsync<T>(sql, parameters);
@@ -41,7 +41,7 @@ public class BaseRepository
 	{
 		try
 		{
-			await using var connection = ConnectionFactory.CreateConnection();
+			await using var connection = ConnectionFactory.CreateReplicaConnection();
 			await connection.OpenAsync(cancellationToken);
 		
 			var result = await connection.QuerySingleOrDefaultAsync<T>(sql, parameters);
@@ -60,7 +60,7 @@ public class BaseRepository
 	{
 		try
 		{
-			await using var connection = ConnectionFactory.CreateConnection();
+			await using var connection = ConnectionFactory.CreateMasterConnection();
 			await connection.OpenAsync(cancellationToken);
 		
 			var rows = await connection.ExecuteAsync(sql, parameters);

@@ -55,9 +55,14 @@ and import in Grafana
 
 ### Application container exporter / Prometheus / Grafana dashboard
 
-container_cpu_usage_seconds_total{name="socialnetwork-1"} 
+container_cpu_usage_seconds_total{name="socialnetwork-1"}
 container_memory_usage_bytes{name="socialnetwork-1"}
 container_fs_io_time_seconds_total{name="socialnetwork-1"}
+container_fs_usage_bytes{name="socialnetwork-1"}
+
+rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_service="socialnetwork-db-1"}[5s])
+container_memory_usage_bytes{container_label_com_docker_compose_service="socialnetwork-db-1"}
+container_fs_usage_bytes{container_label_com_docker_compose_service="socialnetwork-db-1"}
 
 ### PostgreSql exporter / Prometheus / Grafana dashboard
 
