@@ -8,6 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{AE5135
 		README.md = README.md
 		postman_collections\SocialNetworkAPI.postman_collection.json = postman_collections\SocialNetworkAPI.postman_collection.json
 		prometheus.yml = prometheus.yml
+		init-master.sh = init-master.sh
+		init-replica.sh = init-replica.sh
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetworkApi", "src\SocialNetworkApi\SocialNetworkApi.csproj", "{AEC279F3-C019-470D-9615-01B4D2DAF7D0}"
