@@ -57,6 +57,22 @@ services:
     networks:
       - custom-network
 
+  replication_setup:
+    image: postgres:latest
+    container_name: replication-setup
+    depends_on:
+      - socialnetwork-db-master
+      - socialnetwork-db-replica-1
+      - socialnetwork-db-replica-2
+    volumes:
+      - ./setup_replication.sh:/setup_replication.sh
+      - socialnetwork-db-master-1:/master_data
+      - socialnetwork-db-replica-1:/replica1_data
+      - socialnetwork-db-replica-2:/replica2_data
+    networks:
+      - custom-network
+    entrypoint: ["sh", "-c", "/setup_replication.sh && tail -f /dev/null"]
+
   socialnetwork-db-master:
     image: postgres:latest
     container_name: socialnetwork-db-master
@@ -65,7 +81,7 @@ services:
       POSTGRES_DB: socialnetwork
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
-      PGDATA: /var/lib/postgresql/data/pgdata
+      #PGDATA: /var/lib/postgresql/data
     volumes:
       - socialnetwork-db-master-1:/var/lib/postgresql/data
       - ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
@@ -84,14 +100,14 @@ services:
       POSTGRES_PASSWORD: test
     volumes:
       - socialnetwork-db-replica-1:/var/lib/postgresql/data
-      - ./init-replica.sh:/docker-entrypoint-initdb.d/init-replica.sh
+      #- ./init-replica.sh:/tmp/scripts/init-replica.sh
     ports:
       - "5401:5432"
     depends_on:
       - socialnetwork-db-master
     networks:
       - custom-network
-    command: bash -c "/docker-entrypoint-initdb.d/init-replica.sh && exec postgres"
+    # command: bash -c "/tmp/scripts/init-replica.sh && exec postgres"
     # command: bash -c "su -c '/docker-entrypoint-initdb.d/init-replica.sh && exec postgres' replicator"
 
   socialnetwork-db-replica-2:
@@ -103,14 +119,14 @@ services:
       POSTGRES_PASSWORD: test
     volumes:
       - socialnetwork-db-replica-2:/var/lib/postgresql/data
-      - ./init-replica.sh:/docker-entrypoint-initdb.d/init-replica.sh
+      #- ./init-replica.sh:/docker-entrypoint-initdb.d/init-replica.sh
     ports:
       - "5402:5432"
     depends_on:
       - socialnetwork-db-master
     networks:
       - custom-network
-    command: bash -c "/docker-entrypoint-initdb.d/init-replica.sh && exec postgres"
+    #command: bash -c "/docker-entrypoint-initdb.d/init-replica.sh && exec postgres"
     # command: bash -c "su -c '/docker-entrypoint-initdb.d/init-replica.sh && exec postgres' replicator"
 
   # exporter for docker container metrics
