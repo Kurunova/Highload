@@ -9,7 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{AE5135
 		postman_collections\SocialNetworkAPI.postman_collection.json = postman_collections\SocialNetworkAPI.postman_collection.json
 		prometheus.yml = prometheus.yml
 		init-master.sh = init-master.sh
-		init-replica.sh = init-replica.sh
 		setup_replication.sh = setup_replication.sh
 	EndProjectSection
 EndProject
