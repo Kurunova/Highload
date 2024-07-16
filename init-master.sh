@@ -27,9 +27,9 @@ else
   echo "Running initialization script for the first time..."
 
   # логи
-  echo "log_destination = 'stderr'" >> /var/lib/postgresql/data/postgresql.conf
-  echo "logging_collector = on" >> /var/lib/postgresql/data/postgresql.conf
-  echo "log_min_messages = debug1" >> /var/lib/postgresql/data/postgresql.conf
+#  echo "log_destination = 'stderr'" >> /var/lib/postgresql/data/postgresql.conf
+#  echo "logging_collector = on" >> /var/lib/postgresql/data/postgresql.conf
+#  echo "log_min_messages = debug1" >> /var/lib/postgresql/data/postgresql.conf
 
   # Настройки для репликации  
   # echo "ssl = off" >> /var/lib/postgresql/data/postgresql.conf

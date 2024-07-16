@@ -7,6 +7,8 @@ volumes:
     name: socialnetwork-db-replica-1
   socialnetwork-db-replica-2:
     name: socialnetwork-db-replica-2
+  master-backup:
+    name: master-backup    
   influxdb-data:
   grafana-data:
   prometheus-data:
@@ -24,6 +26,8 @@ services:
       - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
       - DatabaseSettings__ReplicaConnectionStrings__0=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
       - DatabaseSettings__ReplicaConnectionStrings__1=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
+      #- DatabaseSettings__ReplicaConnectionStrings__0=Server=socialnetwork-db-replica-1;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
+      #- DatabaseSettings__ReplicaConnectionStrings__1=Server=socialnetwork-db-replica-2;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
       - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
       - Jwt__Issuer=socialnetwork.com
       - Jwt__Audience=socialnetwork.com
@@ -60,13 +64,14 @@ services:
   replication_setup:
     image: postgres:latest
     container_name: replication-setup
+    user: "postgres"
     depends_on:
       - socialnetwork-db-master
       - socialnetwork-db-replica-1
       - socialnetwork-db-replica-2
     volumes:
       - ./setup_replication.sh:/setup_replication.sh
-      - socialnetwork-db-master-1:/master_data
+      - master-backup:/master_backup
       - socialnetwork-db-replica-1:/replica1_data
       - socialnetwork-db-replica-2:/replica2_data
     networks:
@@ -144,12 +149,12 @@ services:
       - custom-network
 
   # exporter for db metrics
-  postgres-exporter:
+  postgres-exporter-master:
     image: prometheuscommunity/postgres-exporter:latest
     environment:
       DATA_SOURCE_NAME: "postgresql://test:test@socialnetwork-db-master:5432/socialnetwork?sslmode=disable"
     ports:
-      - "9187:9187"
+      - "9190:9187"
     depends_on:
       - socialnetwork-db-master
     networks:
@@ -160,7 +165,7 @@ services:
     environment:
       DATA_SOURCE_NAME: "postgresql://test:test@socialnetwork-db-replica-1:5432/socialnetwork?sslmode=disable"
     ports:
-      - "9188:9187"
+      - "9191:9187"
     depends_on:
       - socialnetwork-db-replica-1
     networks:
@@ -171,7 +176,7 @@ services:
     environment:
       DATA_SOURCE_NAME: "postgresql://test:test@socialnetwork-db-replica-2:5432/socialnetwork?sslmode=disable"
     ports:
-      - "9189:9187"
+      - "9192:9187"
     depends_on:
       - socialnetwork-db-replica-2
     networks:
