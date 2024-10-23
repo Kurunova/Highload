@@ -87,8 +87,12 @@ services:
     container_name: exporter-postgres-master
     environment:
       DATA_SOURCE_NAME: "postgresql://postgres_user:!QAZ2wsx@socialnetwork-db-master:5432/socialnetwork?sslmode=disable"
+      #POSTGRES_EXPORTER_EXTEND_QUERY_PATH: "/docker-config/postgres-exporter-queries.yml"
     ports:
       - "9190:9187"
+    volumes:
+      #- ./docker-config/postgres-exporter-queries.yml:/docker-config/postgres-exporter-queries.yml
+      - ./docker-config/postgres_exporter.yml:/postgres_exporter.yml
     depends_on:
       - socialnetwork-db-master
     networks:
@@ -98,13 +102,13 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./docker-config/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     ports:
       - "9090:9090"
-#    depends_on:
-#      - cadvisor
-#      - socialnetwork-1
+    depends_on:
+      - cadvisor
+      - exporter-postgres-master
     networks:
       - sn-network
      

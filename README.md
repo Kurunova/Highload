@@ -17,7 +17,7 @@ Connect to DB:
     - postgres_user:!QAZ2wsx
 Grafana: http://localhost:3000/
     - admin:!QAZ2wsx
-Prometheus: http://localhost:9090/
+Prometheus: http://localhost:9090/, check exporters statuses http://localhost:9090/targets
 cadvisor: http://localhost:8080/
 Postgres exporter: http://localhost:9190/
 
@@ -72,46 +72,34 @@ Dashboard: SocialNetwork Api
    - container_fs_inodes_free{name="socialnetwork-api-1", job="cadvisor"}
 
 Dashboard: SocialNetwork Db Master
+1. Visualisation: Текущее количество активных соединений
+   - pg_stat_activity_count{datname="socialnetwork", state="active"}
+   - legend {{datname}}
+2. Visualisation: Индексные и последовательные сканы по таблицам
+   - Последовательные сканы
+   - pg_stat_user_tables_seq_scan{datname="socialnetwork", relname="users"}
+   - legend tables_seq_{{relname}}
+   - Индексные сканы
+   - pg_stat_user_tables_idx_scan{datname="socialnetwork", relname="users"}
+   - legend tables_idx_{{relname}}
+3. Visualisation: Общая статистика по базам данных
+   - Количество транзакций
+   - pg_stat_database_xact_commit{datname="socialnetwork"}
+   - Количество операций чтения
+   - pg_stat_database_blks_read{datname="socialnetwork"}
+4. Visualisation: Информация о блокировках
+   - pg_locks_count{datname="socialnetwork"}
+   - legend {{mode}}
+5. Visualisation: Статистика репликации
+   - Задержка репликации в байтах
+   - pg_stat_replication_delay_bytes{datname="socialnetwork"}
+   - Состояние репликации
+   - pg_stat_replication_state{datname="socialnetwork"}
+6. Visualisation: Размер базы данных
+   - pg_database_size_bytes{datname="socialnetwork"}
+   - legend {{datname}}
+7. Visualisation: Размер табличного пространства
+   - pg_tablespace_size_bytes{datname="socialnetwork", tablespacename="your_tablespace_name"}
+8. Visualisation: Максимальная длительность транзакций
+   - pg_stat_activity_max_tx_duration_seconds{datname="socialnetwork"}
 
-
-## Setup metrics 
-
-### Application container exporter / Prometheus / Grafana dashboard
-
-rate(container_cpu_usage_seconds_total{name="socialnetwork-db-1"}[5s])
-container_memory_usage_bytes{name="socialnetwork-db-1"}
-container_fs_usage_bytes{name="socialnetwork-db-1"}
-
-### PostgreSql exporter / Prometheus / Grafana dashboard
-
-#### Текущее количество активных соединений
-pg_stat_activity_count{datname="socialnetwork"}
-pg_stat_activity_count{datname="socialnetwork", state="active"}
-#### Индексные и последовательные сканы по таблицам
-Последовательные сканы
-pg_stat_user_tables_seq_scan{datname="socialnetwork"}
-Индексные сканы
-pg_stat_user_tables_idx_scan{datname="socialnetwork"}
-#### Статистика фонового записывающего процесса
-Сбросы страниц
-pg_stat_bgwriter_buffers_checkpoint{datname="socialnetwork"}
-Очистки страниц
-pg_stat_bgwriter_buffers_clean{datname="socialnetwork"}
-#### Общая статистика по базам данных
-Количество транзакций
-pg_stat_database_xact_commit{datname="socialnetwork"}
-Количество операций чтения
-pg_stat_database_blks_read{datname="socialnetwork"}
-####  Информация о блокировках
-pg_locks_count{datname="socialnetwork"}
-#### Статистика репликации
-Задержка репликации в байтах
-pg_stat_replication_delay_bytes{datname="socialnetwork"}
-Состояние репликации
-pg_stat_replication_state{datname="socialnetwork"}
-#### Размер базы данных
-pg_database_size_bytes{datname="socialnetwork"}
-#### Размер табличного пространства
-pg_tablespace_size_bytes{datname="socialnetwork", tablespacename="your_tablespace_name"}
-#### Максимальная длительность транзакций
-pg_stat_activity_max_tx_duration_seconds{datname="socialnetwork"}

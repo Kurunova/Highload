@@ -1,0 +1,125 @@
+### Setup metrics 
+#
+#### Application container exporter / Prometheus / Grafana dashboard
+#
+#rate(container_cpu_usage_seconds_total{name="socialnetwork-db-1"}[5s])
+#container_memory_usage_bytes{name="socialnetwork-db-1"}
+#container_fs_usage_bytes{name="socialnetwork-db-1"}
+#
+#### PostgreSql exporter / Prometheus / Grafana dashboard
+#
+##### Текущее количество активных соединений
+#pg_stat_activity_count{datname="socialnetwork"}
+#pg_stat_activity_count{datname="socialnetwork", state="active"}
+##### Индексные и последовательные сканы по таблицам
+#Последовательные сканы
+#pg_stat_user_tables_seq_scan{datname="socialnetwork"}
+#Индексные сканы
+#pg_stat_user_tables_idx_scan{datname="socialnetwork"}
+##### Статистика фонового записывающего процесса
+#Сбросы страниц
+#pg_stat_bgwriter_buffers_checkpoint{datname="socialnetwork"}
+#Очистки страниц
+#pg_stat_bgwriter_buffers_clean{datname="socialnetwork"}
+##### Общая статистика по базам данных
+#Количество транзакций
+#pg_stat_database_xact_commit{datname="socialnetwork"}
+#Количество операций чтения
+#pg_stat_database_blks_read{datname="socialnetwork"}
+#####  Информация о блокировках
+#pg_locks_count{datname="socialnetwork"}
+##### Статистика репликации
+#Задержка репликации в байтах
+#pg_stat_replication_delay_bytes{datname="socialnetwork"}
+#Состояние репликации
+#pg_stat_replication_state{datname="socialnetwork"}
+##### Размер базы данных
+#pg_database_size_bytes{datname="socialnetwork"}
+##### Размер табличного пространства
+#pg_tablespace_size_bytes{datname="socialnetwork", tablespacename="your_tablespace_name"}
+##### Максимальная длительность транзакций
+#pg_stat_activity_max_tx_duration_seconds{datname="socialnetwork"}
+
+# Текущее количество активных соединений
+pg_stat_activity_count:
+  query: "SELECT datname, state, count(*) AS pg_stat_activity_count FROM pg_stat_activity GROUP BY datname, state;"
+  metrics:
+    - pg_stat_activity_count:
+        usage: "gauge"
+        description: "Number of connections by state."
+
+# Индексные и последовательные сканы по таблицам
+pg_stat_user_tables:
+  query: "SELECT relname, seq_scan, idx_scan FROM pg_stat_user_tables;"
+  metrics:
+    - seq_scan:
+        usage: "gauge"
+        description: "Number of sequential scans per table."
+    - idx_scan:
+        usage: "gauge"
+        description: "Number of index scans per table."
+
+# Статистика фонового записывающего процесса
+pg_stat_bgwriter:
+  query: "SELECT checkpoints_timed, buffers_checkpoint, buffers_clean FROM pg_stat_bgwriter;"
+  metrics:
+    - buffers_checkpoint:
+        usage: "gauge"
+        description: "Buffers written during checkpoints."
+    - buffers_clean:
+        usage: "gauge"
+        description: "Buffers cleaned by the background writer."
+
+# Общая статистика по базам данных
+pg_stat_database:
+  query: "SELECT datname, xact_commit, blks_read FROM pg_stat_database;"
+  metrics:
+    - xact_commit:
+        usage: "counter"
+        description: "Total number of transactions committed."
+    - blks_read:
+        usage: "counter"
+        description: "Number of disk blocks read."
+
+#  Информация о блокировках
+pg_locks_count:
+  query: "SELECT count(*) AS locks_count FROM pg_locks WHERE NOT granted;"
+  metrics:
+    - locks_count:
+        usage: "gauge"
+        description: "Number of active locks."
+
+# Статистика репликации
+pg_stat_replication:
+  query: "SELECT application_name, state, pg_wal_lsn_diff(pg_current_wal_lsn(), replay_lsn) AS replication_delay_bytes FROM pg_stat_replication;"
+  metrics:
+    - replication_delay_bytes:
+        usage: "gauge"
+        description: "Replication delay in bytes."
+    - state:
+        usage: "gauge"
+        description: "Replication state (e.g., streaming)."
+
+# Размер базы данных
+pg_database_size_bytes:
+  query: "SELECT datname, pg_database_size(datname) AS size FROM pg_database;"
+  metrics:
+    - size:
+        usage: "gauge"
+        description: "Size of the database in bytes."
+
+# Размер табличного пространства
+pg_tablespace_size_bytes:
+  query: "SELECT spcname, pg_tablespace_size(spcname) AS size FROM pg_tablespace;"
+  metrics:
+    - size:
+        usage: "gauge"
+        description: "Size of the tablespace in bytes."
+
+# Максимальная длительность транзакций
+pg_stat_activity_max_tx_duration_seconds:
+  query: "SELECT datname, EXTRACT(EPOCH FROM (now() - xact_start)) AS max_tx_duration FROM pg_stat_activity WHERE xact_start IS NOT NULL;"
+  metrics:
+    - max_tx_duration:
+        usage: "gauge"
+        description: "Maximum transaction duration in seconds."
