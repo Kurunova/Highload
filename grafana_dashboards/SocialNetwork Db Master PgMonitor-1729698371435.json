@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
+  "id": 5,
   "links": [],
   "panels": [
     {
@@ -87,7 +87,7 @@
         "x": 0,
         "y": 0
       },
-      "id": 7,
+      "id": 3,
       "options": {
         "legend": {
           "calcs": [],
@@ -103,15 +103,11 @@
       "pluginVersion": "11.3.0",
       "targets": [
         {
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "container_fs_inodes_total{name=\"socialnetwork-api-1\", job=\"cadvisor\"}",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "legendFormat": "total_{{name}}",
+          "editorMode": "code",
+          "expr": "pg_stat_database_xact_commit{datname=\"socialnetwork\"}",
+          "legendFormat": "Количество транзакций",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
         },
         {
           "datasource": {
@@ -119,15 +115,15 @@
             "uid": "fe1q74kyeytj4d"
           },
           "editorMode": "code",
-          "expr": "container_fs_inodes_free{name=\"socialnetwork-api-1\", job=\"cadvisor\"}",
+          "expr": "pg_stat_database_blks_read{datname=\"socialnetwork\"}",
           "hide": false,
           "instant": false,
-          "legendFormat": "free_{{name}}",
+          "legendFormat": "Количество операций чтения",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "File System inodes",
+      "title": "Общая статистика по базам данных",
       "type": "timeseries"
     },
     {
@@ -213,19 +209,30 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "exemplar": false,
-          "expr": "container_memory_usage_bytes{name=\"socialnetwork-api-1\", job=\"cadvisor\"}",
+          "editorMode": "code",
+          "expr": "pg_stat_user_tables_seq_scan{datname=\"socialnetwork\", relname=\"users\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "interval": "",
-          "legendFormat": "{{name}}",
+          "legendFormat": "tables_seq_{{relname}}",
           "range": true,
           "refId": "A",
           "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fe1q74kyeytj4d"
+          },
+          "editorMode": "code",
+          "expr": "pg_stat_user_tables_idx_scan{datname=\"socialnetwork\", relname=\"users\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "tables_idx_{{relname}}",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "title": "Memory",
+      "title": "Индексные и последовательные сканы по таблицам",
       "type": "timeseries"
     },
     {
@@ -294,7 +301,7 @@
         "x": 0,
         "y": 8
       },
-      "id": 1,
+      "id": 4,
       "options": {
         "legend": {
           "calcs": [],
@@ -310,22 +317,14 @@
       "pluginVersion": "11.3.0",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "fe1q74kyeytj4d"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "group by(cpu) (container_cpu_usage_seconds_total{name=\"socialnetwork-api-1\", job=\"cadvisor\"})",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "legendFormat": "__auto",
+          "editorMode": "code",
+          "expr": "pg_locks_count{datname=\"socialnetwork\"}",
+          "legendFormat": "{{mode}}",
           "range": true,
-          "refId": "A",
-          "useBackend": false
+          "refId": "A"
         }
       ],
-      "title": "CPU",
+      "title": "Информация о блокировках",
       "type": "timeseries"
     },
     {
@@ -411,26 +410,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "container_network_receive_bytes_total{name=\"socialnetwork-api-1\", job=\"cadvisor\"}",
-          "legendFormat": "receive_{{interface}}",
+          "expr": "pg_database_size_bytes{datname=\"socialnetwork\"}",
+          "legendFormat": "{{datname}}",
           "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "fe1q74kyeytj4d"
-          },
-          "editorMode": "code",
-          "expr": "container_network_transmit_bytes_total{name=\"socialnetwork-api-1\", job=\"cadvisor\"}",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "transmit_{{interface}}",
-          "range": true,
-          "refId": "B"
         }
       ],
-      "title": "Network",
+      "title": "Размер базы данных",
       "type": "timeseries"
     },
     {
@@ -499,7 +485,7 @@
         "x": 0,
         "y": 16
       },
-      "id": 4,
+      "id": 1,
       "options": {
         "legend": {
           "calcs": [],
@@ -515,49 +501,315 @@
       "pluginVersion": "11.3.0",
       "targets": [
         {
-          "editorMode": "builder",
-          "expr": "container_fs_usage_bytes{name=\"socialnetwork-api-1\", job=\"cadvisor\"}",
-          "hide": false,
-          "legendFormat": "{{name}}",
-          "range": true,
-          "refId": "A"
-        },
-        {
           "datasource": {
             "type": "prometheus",
             "uid": "fe1q74kyeytj4d"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "container_fs_reads_total{name=\"socialnetwork-api-1\", job=\"cadvisor\"}",
+          "editorMode": "code",
+          "expr": "pg_stat_activity_count{datname=\"socialnetwork\", state=\"active\"}",
           "fullMetaSearch": false,
-          "hide": false,
           "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "read",
+          "legendFormat": "{{datname}}",
           "range": true,
-          "refId": "B",
-          "useBackend": false
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "fe1q74kyeytj4d"
-          },
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "container_fs_writes_total{name=\"socialnetwork-api-1\", job=\"cadvisor\"}",
-          "fullMetaSearch": false,
-          "hide": false,
-          "includeNullMetadata": true,
-          "instant": false,
-          "legendFormat": "write",
-          "range": true,
-          "refId": "C",
+          "refId": "A",
           "useBackend": false
         }
       ],
-      "title": "IO",
+      "title": "Текущее количество активных соединений",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "fe1q74kyeytj4d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "pg_stat_replication_delay_bytes{datname=\"socialnetwork\"}",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "Задержка репликации в байтах",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fe1q74kyeytj4d"
+          },
+          "editorMode": "code",
+          "expr": "pg_stat_replication_state{datname=\"socialnetwork\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Состояние репликации",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Статистика репликации",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "fe1q74kyeytj4d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "pg_stat_activity_max_tx_duration_seconds{datname=\"socialnetwork\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Максимальная длительность транзакций",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "fe1q74kyeytj4d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.3.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "pg_tablespace_size_bytes{datname=\"socialnetwork\", tablespacename=\"users\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Размер табличного пространства",
       "type": "timeseries"
     }
   ],
@@ -568,13 +820,13 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "SocialNetwork Api",
-  "uid": "ee1q97gfdgzcwe",
+  "title": "SocialNetwork Db Master PgMonitor",
+  "uid": "ae1r2rfquc2yoc",
   "version": 13,
   "weekStart": ""
 }
