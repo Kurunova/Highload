@@ -1,0 +1,36 @@
+﻿{
+  "profiles": {
+    "SocialNetwork.DbMigrator": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "RUN_OPTIONS": "migrateUp",
+        "DatabaseSettings__MasterConnectionString": "Server=localhost;Port=5400;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true"
+      }
+    },
+    "SocialNetwork.DbMigrator.Rollback": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "RUN_OPTIONS": "migrateDown 0", // need to specify version
+        "DatabaseSettings__MasterConnectionString": "Server=localhost;Port=5400;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true"
+      }
+    },
+    "SocialNetwork.DbMigrator.RollbackOne": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "RUN_OPTIONS": "migrateDown",
+        "DatabaseSettings__MasterConnectionString": "Server=localhost;Port=5400;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true"
+      }
+    },
+    "SocialNetwork.DbMigrator.RollbackAll": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "RUN_OPTIONS": "migrateDown All",
+        "DatabaseSettings__MasterConnectionString": "Server=localhost;Port=5400;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true"
+      }
+    }
+  }
+}

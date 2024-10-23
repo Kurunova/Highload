@@ -10,10 +10,11 @@ scrape_configs:
   - job_name: 'postgres-master'
     scrape_interval: 5s
     static_configs:
-      - targets:
-          - 'postgres-exporter-master:9190'
-          - 'postgres-exporter-replica-1:9191'
-          - 'postgres-exporter-replica-2:9192'
+      - targets: ['exporter-postgres-master:9190']
+
+
+#          - 'postgres-exporter-replica-1:9191'
+#          - 'postgres-exporter-replica-2:9192'
 
 #  - job_name: 'postgres-replica-1'
 #    scrape_interval: 5s

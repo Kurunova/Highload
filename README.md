@@ -11,6 +11,29 @@ Start all containers:
 docker-compose up -d --build --force-recreate
 ```
 
+Application API: http://localhost:5001/swagger/index.html
+Connect to DB: 
+    - localhost:5400
+    - postgres_user:!QAZ2wsx
+Grafana: http://localhost:3000/
+    - admin:!QAZ2wsx
+Prometheus: http://localhost:9090/
+cadvisor: http://localhost:8080/
+Postgres exporter: http://localhost:9190/
+
+## Migrations
+
+Manual run up migrations
+```
+dotnet run --project src/SocialNetwork.DbMigrator --launch-profile "SocialNetwork.DbMigrator"
+```
+Manual run down migrations
+```
+dotnet run --project src/SocialNetwork.DbMigrator --launch-profile "SocialNetwork.DbMigrator.RollbackAll"
+dotnet run --project src/SocialNetwork.DbMigrator --launch-profile "SocialNetwork.DbMigrator.RollbackOne"
+dotnet run --project src/SocialNetwork.DbMigrator --launch-profile "SocialNetwork.DbMigrator.Rollback"
+```
+
 ## Setup JMeter
 
 ### JMeter additional Graph plugins
@@ -19,50 +42,45 @@ Install JMeter PluginManager
 Download and put into ext/lib folder
 Open PluginManager and install 3 Basic Graph
 
-### JMeter Graph with Grafana and InfluxDB
-
-#### Setup InfluxDB
-
-Go to the page http://localhost:8086/
-Fill in next value
-INFLUXDB_ORGANIZATION_NAME=socialnetwork
-INFLUXDB_BUCKET_NAME=loadtest
-
-#### JMeter Backend Listener
-
-Add Backend Listener 
-Select InfluxdbBackendListenerClient (install additional plugin)
-Url: http://localhost:8086/write?db=LoadTestDb
-Url: http://localhost:8086/api/v2/write?org=socialnetwork&bucket=loadtest
-influxdbToken: from ui
-
-#### Grafana Dashboard
+## Setup Grafana Dashboard
 
 1. Add DataSource
-URL: http://influxdb:8086
-Basic auth: admin
-Password: adminpassword
-For Flux use:
-Organization: socialnetwork
-Token: from UI http://localhost:8086/ get API token
-Default Bucket: loadtest
+Select Prometheus
+URL: http://prometheus:9090/
 
 2. Add Dashboard
-Download json here: https://grafana.com/grafana/dashboards/5496-apache-jmeter-dashboard-by-ubikloadpack/
-and import in Grafana
+Import a dashboard from folder grafana_dashboards (SocialNetwork Api-1729679954881.json, )
+or create new Dashboard
+
+Create new Dashboard
+- Choose DataSource as Prometheus
+
+Dashboard: SocialNetwork Api
+1. Visualisation: CPU
+   - group by(cpu) (container_cpu_usage_seconds_total{name="socialnetwork-api-1", job="cadvisor"})
+2. Visualisation: Memory
+   - container_memory_usage_bytes{name="socialnetwork-api-1", job="cadvisor"}
+3. Visualisation: IO
+   - container_fs_usage_bytes{name="socialnetwork-api-1", job="cadvisor"}
+   - container_fs_reads_total{name="socialnetwork-api-1", job="cadvisor"}
+   - container_fs_writes_total{name="socialnetwork-api-1", job="cadvisor"}
+4. Visualisation: Network
+   - container_network_receive_bytes_total{name="socialnetwork-api-1", job="cadvisor"}
+   - container_network_transmit_bytes_total{name="socialnetwork-api-1", job="cadvisor"}
+5. Visualisation: File System inodes
+   - container_fs_inodes_total{name="socialnetwork-api-1", job="cadvisor"}
+   - container_fs_inodes_free{name="socialnetwork-api-1", job="cadvisor"}
+
+Dashboard: SocialNetwork Db Master
+
 
 ## Setup metrics 
 
 ### Application container exporter / Prometheus / Grafana dashboard
 
-container_cpu_usage_seconds_total{name="socialnetwork-1"}
-container_memory_usage_bytes{name="socialnetwork-1"}
-container_fs_io_time_seconds_total{name="socialnetwork-1"}
-container_fs_usage_bytes{name="socialnetwork-1"}
-
-rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_service="socialnetwork-db-1"}[5s])
-container_memory_usage_bytes{container_label_com_docker_compose_service="socialnetwork-db-1"}
-container_fs_usage_bytes{container_label_com_docker_compose_service="socialnetwork-db-1"}
+rate(container_cpu_usage_seconds_total{name="socialnetwork-db-1"}[5s])
+container_memory_usage_bytes{name="socialnetwork-db-1"}
+container_fs_usage_bytes{name="socialnetwork-db-1"}
 
 ### PostgreSql exporter / Prometheus / Grafana dashboard
 

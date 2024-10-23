@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{AE5135
 		prometheus.yml = prometheus.yml
 		init-master.sh = init-master.sh
 		setup_replication.sh = setup_replication.sh
+		docker-compose-hw3.yml = docker-compose-hw3.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetworkApi", "src\SocialNetworkApi\SocialNetworkApi.csproj", "{AEC279F3-C019-470D-9615-01B4D2DAF7D0}"
@@ -19,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.DataAccess", "src\SocialNetwork.DataAccess\SocialNetwork.DataAccess.csproj", "{4D4F06EC-54E0-4B27-9D1C-6E14FBD925D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Application", "src\SocialNetwork.Application\SocialNetwork.Application.csproj", "{2D90B652-EDC6-43EE-B509-541BD0225015}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.DbMigrator", "src\SocialNetwork.DbMigrator\SocialNetwork.DbMigrator.csproj", "{F9E2F6E2-348B-4A06-8499-C347413549C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,11 +45,16 @@ Global
 		{2D90B652-EDC6-43EE-B509-541BD0225015}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D90B652-EDC6-43EE-B509-541BD0225015}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D90B652-EDC6-43EE-B509-541BD0225015}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9E2F6E2-348B-4A06-8499-C347413549C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9E2F6E2-348B-4A06-8499-C347413549C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9E2F6E2-348B-4A06-8499-C347413549C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9E2F6E2-348B-4A06-8499-C347413549C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AEC279F3-C019-470D-9615-01B4D2DAF7D0} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 		{849DA60A-B2EF-43CF-9B65-162EB5992D41} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 		{4D4F06EC-54E0-4B27-9D1C-6E14FBD925D3} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 		{2D90B652-EDC6-43EE-B509-541BD0225015} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
+		{F9E2F6E2-348B-4A06-8499-C347413549C2} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 	EndGlobalSection
 EndGlobal

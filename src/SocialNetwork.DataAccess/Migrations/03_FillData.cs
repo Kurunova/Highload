@@ -10,7 +10,7 @@ using SocialNetwork.Domain.Entities;
 
 namespace SocialNetwork.DataAccess.Migrations;
 
-[Migration(3, "FillData")]
+[Migration(3, TransactionBehavior.None, "FillData")]
 public class FillDataMigration : CustomMigration
 {
 	private readonly Faker _faker = new("ru");
@@ -18,13 +18,15 @@ public class FillDataMigration : CustomMigration
 	protected override void GetUp(IMigrationContext context)
 	{
 		var sqlBuilder = new StringBuilder();
+		
 		int totalRecordsCount = 1000000;
-		int insertSize = 100;
+		int insertSize = 1000;
 		var operationsCount = totalRecordsCount / insertSize;
 
 		for (int operationsCounter = 0; operationsCounter < operationsCount; operationsCounter++)
 		{
 			var valuesList = new List<string>();
+			
 			for (int insertCounter = 0; insertCounter < insertSize; insertCounter++)
 			{
 				var uniq = operationsCounter * insertSize + insertCounter;

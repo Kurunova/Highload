@@ -1,33 +1,26 @@
 version: "3.9"
 
 volumes:
-  socialnetwork-db-master-1:
-    name: socialnetwork-db-1
-  socialnetwork-db-replica-1:
-    name: socialnetwork-db-replica-1
-  socialnetwork-db-replica-2:
-    name: socialnetwork-db-replica-2
-  master-backup:
-    name: master-backup    
-  influxdb-data:
+  db-data-master-1:
+    name: socialnetwork-db-master-1
   grafana-data:
+    name: socialnetwork-grafana-data
   prometheus-data:
+    name: socialnetwork-prometheus-data
 
 services:
-  socialnetwork-1:
+  socialnetwork-api-1:
     build:
       context: ./src
       dockerfile: SocialNetworkApi/Dockerfile
-    container_name: socialnetwork-1
+    container_name: socialnetwork-api-1
     depends_on:
       - socialnetwork-db-master
     environment:
       - HTTP_PORT=8080
-      - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
-      - DatabaseSettings__ReplicaConnectionStrings__0=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
-      - DatabaseSettings__ReplicaConnectionStrings__1=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
-      #- DatabaseSettings__ReplicaConnectionStrings__0=Server=socialnetwork-db-replica-1;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
-      #- DatabaseSettings__ReplicaConnectionStrings__1=Server=socialnetwork-db-replica-2;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
+      - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DatabaseSettings__ReplicaConnectionStrings__0=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DatabaseSettings__ReplicaConnectionStrings__1=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
       - Jwt__Issuer=socialnetwork.com
       - Jwt__Audience=socialnetwork.com
@@ -37,46 +30,25 @@ services:
     ports:
       - "5001:8080"
     networks:
-      - custom-network
+      - sn-network
 
   socialnetwork-dbmigrator-1:
     build:
       context: ./src
-      dockerfile: SocialNetworkApi/Dockerfile
+      dockerfile: SocialNetwork.DbMigrator/Dockerfile
     container_name: socialnetwork-dbmigrator-1
     depends_on:
       - socialnetwork-db-master
     environment:
-      - HTTP_PORT=8080
       - RUN_OPTIONS=migrateUp
-      - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=test;Password=test;No Reset On Close=true; Include Error Detail=true
-      - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
-      - Jwt__Issuer=socialnetwork.com
-      - Jwt__Audience=socialnetwork.com
+      - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - Serilog__Using__0=Serilog.Sinks.Console
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console
     ports:
       - "5002:8080"
     networks:
-      - custom-network
-
-  replication_setup:
-    image: postgres:latest
-    container_name: replication-setup
-    user: "postgres"
-    depends_on:
-      - socialnetwork-db-master
-      - socialnetwork-db-replica-1
-      - socialnetwork-db-replica-2
-    volumes:
-      - ./setup_replication.sh:/setup_replication.sh
-      - master-backup:/master_backup
-      - socialnetwork-db-replica-1:/replica1_data
-      - socialnetwork-db-replica-2:/replica2_data
-    networks:
-      - custom-network
-    entrypoint: ["sh", "-c", "/setup_replication.sh && tail -f /dev/null"]
+      - sn-network
 
   socialnetwork-db-master:
     image: postgres:latest
@@ -84,55 +56,16 @@ services:
     user: "postgres"
     environment:
       POSTGRES_DB: socialnetwork
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: "!QAZ2wsx"
       #PGDATA: /var/lib/postgresql/data
     volumes:
-      - socialnetwork-db-master-1:/var/lib/postgresql/data
-      - ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
+      - db-data-master-1:/var/lib/postgresql/data
+      #- ./init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
     ports:
       - "5400:5432"
     networks:
-      - custom-network
-    command: bash -c "/docker-entrypoint-initdb.d/init-master.sh && exec postgres"
-
-  socialnetwork-db-replica-1:
-    image: postgres:latest
-    container_name: socialnetwork-db-replica-1
-    user: "postgres"
-    environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-    volumes:
-      - socialnetwork-db-replica-1:/var/lib/postgresql/data
-      #- ./init-replica.sh:/tmp/scripts/init-replica.sh
-    ports:
-      - "5401:5432"
-    depends_on:
-      - socialnetwork-db-master
-    networks:
-      - custom-network
-    # command: bash -c "/tmp/scripts/init-replica.sh && exec postgres"
-    # command: bash -c "su -c '/docker-entrypoint-initdb.d/init-replica.sh && exec postgres' replicator"
-
-  socialnetwork-db-replica-2:
-    image: postgres:latest
-    container_name: socialnetwork-db-replica-2
-    user: "postgres"
-    environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-    volumes:
-      - socialnetwork-db-replica-2:/var/lib/postgresql/data
-      #- ./init-replica.sh:/docker-entrypoint-initdb.d/init-replica.sh
-    ports:
-      - "5402:5432"
-    depends_on:
-      - socialnetwork-db-master
-    networks:
-      - custom-network
-    #command: bash -c "/docker-entrypoint-initdb.d/init-replica.sh && exec postgres"
-    # command: bash -c "su -c '/docker-entrypoint-initdb.d/init-replica.sh && exec postgres' replicator"
+      - sn-network
 
   # exporter for docker container metrics
   cadvisor:
@@ -146,85 +79,48 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     networks:
-      - custom-network
+      - sn-network
 
   # exporter for db metrics
-  postgres-exporter-master:
+  exporter-postgres-master:
     image: prometheuscommunity/postgres-exporter:latest
+    container_name: exporter-postgres-master
     environment:
-      DATA_SOURCE_NAME: "postgresql://test:test@socialnetwork-db-master:5432/socialnetwork?sslmode=disable"
+      DATA_SOURCE_NAME: "postgresql://postgres_user:!QAZ2wsx@socialnetwork-db-master:5432/socialnetwork?sslmode=disable"
     ports:
       - "9190:9187"
     depends_on:
       - socialnetwork-db-master
     networks:
-      - custom-network
+      - sn-network
 
-  postgres-exporter-replica-1:
-    image: prometheuscommunity/postgres-exporter:latest
-    environment:
-      DATA_SOURCE_NAME: "postgresql://test:test@socialnetwork-db-replica-1:5432/socialnetwork?sslmode=disable"
-    ports:
-      - "9191:9187"
-    depends_on:
-      - socialnetwork-db-replica-1
-    networks:
-      - custom-network
-
-  postgres-exporter-replica-2:
-    image: prometheuscommunity/postgres-exporter:latest
-    environment:
-      DATA_SOURCE_NAME: "postgresql://test:test@socialnetwork-db-replica-2:5432/socialnetwork?sslmode=disable"
-    ports:
-      - "9192:9187"
-    depends_on:
-      - socialnetwork-db-replica-2
-    networks:
-      - custom-network
-
-  # db for metrics
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     ports:
       - "9090:9090"
-    depends_on:
-      - cadvisor
-      - socialnetwork-1
+#    depends_on:
+#      - cadvisor
+#      - socialnetwork-1
     networks:
-      - custom-network
+      - sn-network
      
   grafana:
     image: grafana/grafana:latest
-#    depends_on:
-#      - influxdb
+    container_name: grafana
     volumes:
       - grafana-data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=adminpassword
+      - GF_SECURITY_ADMIN_PASSWORD=!QAZ2wsx
     ports:
       - "3000:3000"      
     networks:
-      - custom-network
-
-#  influxdb:
-#    image: influxdb:latest
-#    volumes:
-#      - influxdb-data:/var/lib/influxdb
-#    environment:
-#      - INFLUXDB_DB=LoadTestDb
-#      - INFLUXDB_ADMIN_USER=admin
-#      - INFLUXDB_ADMIN_PASSWORD=adminpassword
-#    #      - INFLUXDB_ORGANIZATION_NAME=socialnetwork - setup in ui
-#    #      - INFLUXDB_BUCKET_NAME=loadtest - setup in ui
-#    ports:
-#      - "8086:8086"
-#    networks:
-#      - custom-network
+      - sn-network
 
 networks:
-  custom-network:
+  sn-network:
     driver: bridge
