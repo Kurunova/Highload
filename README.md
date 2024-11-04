@@ -9,6 +9,7 @@ Start all containers:
 
 ```
 docker-compose up -d --build --force-recreate
+docker-compose -f docker-compose.hw3.1.yml up -d --build --force-recreate
 ```
 
 Application API: http://localhost:5001/swagger/index.html
@@ -49,7 +50,10 @@ Select Prometheus
 URL: http://prometheus:9090/
 
 2. Add Dashboard
-Import a dashboard from folder grafana_dashboards (SocialNetwork Api-1729679954881.json, )
+Import a dashboard from folder grafana_dashboards 
+ - SocialNetwork Api Monitor-1729698396153.json, 
+ - SocialNetwork Db Master Monitor-1729698386003.json
+ - SocialNetwork Db Master PgMonitor-1729698371435.json
 or create new Dashboard
 
 Create new Dashboard

@@ -4,10 +4,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AAEA1F2A-813
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{AE51355B-950D-4DEF-AE67-0E9E94DBC1A3}"
 	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
+		docker-compose.hw3.1.yml = docker-compose.hw3.1.yml
 		README.md = README.md
 		postman_collections\SocialNetworkAPI.postman_collection.json = postman_collections\SocialNetworkAPI.postman_collection.json
-		docker-compose-hw3.yml = docker-compose-hw3.yml
+		docker-compose.hw3.draft.yml = docker-compose.hw3.draft.yml
 		docker-config\init-master.sh = docker-config\init-master.sh
 		docker-config\postgres-exporter-queries.yml = docker-config\postgres-exporter-queries.yml
 		docker-config\prometheus.yml = docker-config\prometheus.yml
