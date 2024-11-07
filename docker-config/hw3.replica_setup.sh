@@ -15,9 +15,12 @@ else
   touch /var/lib/postgresql/data/standby.signal
   
   echo "Setup postgresql.conf"
+  echo "Delete 3 last row from master"
+  head -n -1 /var/lib/postgresql/data/postgresql.conf > /var/lib/postgresql/data/postgresql.conf.tmp && mv /var/lib/postgresql/data/postgresql.conf.tmp /var/lib/postgresql/data/postgresql.conf
+  head -n -1 /var/lib/postgresql/data/postgresql.conf > /var/lib/postgresql/data/postgresql.conf.tmp && mv /var/lib/postgresql/data/postgresql.conf.tmp /var/lib/postgresql/data/postgresql.conf
+  head -n -1 /var/lib/postgresql/data/postgresql.conf > /var/lib/postgresql/data/postgresql.conf.tmp && mv /var/lib/postgresql/data/postgresql.conf.tmp /var/lib/postgresql/data/postgresql.conf
+  echo "Add primary_conninfo"
   echo "primary_conninfo = 'host=$MASTER_CONTAINER port=5432 user=replicator password=!QAZ2wsx'" >> /var/lib/postgresql/data/postgresql.conf
-  
-  echo "max_wal_senders = 4" >> /var/lib/postgresql/data/postgresql.conf
 
   echo "Create flag-file"
   touch /var/lib/postgresql/data/.replica_setup_1

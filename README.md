@@ -11,7 +11,12 @@ Start all containers:
 docker-compose up -d --build --force-recreate
 docker-compose -f hw3.1.docker-compose.yml up -d --build --force-recreate
 docker-compose -f hw3.2.docker-compose.yml up -d --build --force-recreate
-docker-compose -f hw3.2.docker-compose.yml up -d --no-deps --force-recreate socialnetwork-db-master 
+docker-compose -f hw3.2.docker-compose.yml up -d --no-deps --force-recreate socialnetwork-db-master
+
+docker-compose -f hw3.2.docker-compose.yml up socialnetwork-db-replica-1
+docker-compose -f hw3.2.docker-compose.yml stop socialnetwork-db-replica-1
+docker-compose -f hw3.2.docker-compose.yml down -v
+ 
 ```
 
 Application API: http://localhost:5001/swagger/index.html
