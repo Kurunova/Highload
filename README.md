@@ -9,7 +9,9 @@ Start all containers:
 
 ```
 docker-compose up -d --build --force-recreate
-docker-compose -f docker-compose.hw3.1.yml up -d --build --force-recreate
+docker-compose -f hw3.1.docker-compose.yml up -d --build --force-recreate
+docker-compose -f hw3.2.docker-compose.yml up -d --build --force-recreate
+docker-compose -f hw3.2.docker-compose.yml up -d --no-deps --force-recreate socialnetwork-db-master 
 ```
 
 Application API: http://localhost:5001/swagger/index.html

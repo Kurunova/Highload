@@ -4,14 +4,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AAEA1F2A-813
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{AE51355B-950D-4DEF-AE67-0E9E94DBC1A3}"
 	ProjectSection(SolutionItems) = preProject
-		docker-compose.hw3.1.yml = docker-compose.hw3.1.yml
+		hw3.1.docker-compose.yml = hw3.1.docker-compose.yml
 		README.md = README.md
-		postman_collections\SocialNetworkAPI.postman_collection.json = postman_collections\SocialNetworkAPI.postman_collection.json
-		docker-compose.hw3.draft.yml = docker-compose.hw3.draft.yml
-		docker-config\init-master.sh = docker-config\init-master.sh
-		docker-config\postgres-exporter-queries.yml = docker-config\postgres-exporter-queries.yml
+		hw3.2.docker-compose.yml = hw3.2.docker-compose.yml
 		docker-config\prometheus.yml = docker-config\prometheus.yml
-		docker-config\setup_replication.sh = docker-config\setup_replication.sh
+		docker-config\bash_help.sh = docker-config\bash_help.sh
+		docker-config\hw3.master_setup.sh = docker-config\hw3.master_setup.sh
+		postman_collections\hw1.SocialNetworkAPI.postman_collection.json = postman_collections\hw1.SocialNetworkAPI.postman_collection.json
+		docker-config\hw3.replica_setup.sh = docker-config\hw3.replica_setup.sh
+		docker-config\hw3.master_setup_2.sh = docker-config\hw3.master_setup_2.sh
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetworkApi", "src\SocialNetworkApi\SocialNetworkApi.csproj", "{AEC279F3-C019-470D-9615-01B4D2DAF7D0}"

@@ -12,12 +12,12 @@ scrape_configs:
     static_configs:
       - targets: ['exporter-postgres-master:9187']
 
-#  - job_name: 'postgres-replica-1'
-#    scrape_interval: 5s
-#    static_configs:
-#      - targets: ['postgres-exporter-replica-1:9191']
-#
-#  - job_name: 'postgres-replica-2'
-#    scrape_interval: 5s
-#    static_configs:
-#      - targets: ['postgres-exporter-replica-2:9192']
+  - job_name: 'postgres-replica-1'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['exporter-postgres-replica-1:9187']
+
+  - job_name: 'postgres-replica-2'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['exporter-postgres-replica-2:9187']
