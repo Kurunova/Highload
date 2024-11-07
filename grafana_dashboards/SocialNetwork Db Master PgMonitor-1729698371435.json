@@ -24,7 +24,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fe1q74kyeytj4d"
+        "uid": "be38k2hel7nk0c"
       },
       "fieldConfig": {
         "defaults": {
@@ -112,7 +112,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fe1q74kyeytj4d"
+            "uid": "be38k2hel7nk0c"
           },
           "editorMode": "code",
           "expr": "pg_stat_database_blks_read{datname=\"socialnetwork\"}",
@@ -129,7 +129,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fe1q74kyeytj4d"
+        "uid": "be38k2hel7nk0c"
       },
       "fieldConfig": {
         "defaults": {
@@ -221,7 +221,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fe1q74kyeytj4d"
+            "uid": "be38k2hel7nk0c"
           },
           "editorMode": "code",
           "expr": "pg_stat_user_tables_idx_scan{datname=\"socialnetwork\", relname=\"users\"}",
@@ -238,7 +238,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fe1q74kyeytj4d"
+        "uid": "be38k2hel7nk0c"
       },
       "fieldConfig": {
         "defaults": {
@@ -330,7 +330,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fe1q74kyeytj4d"
+        "uid": "be38k2hel7nk0c"
       },
       "fieldConfig": {
         "defaults": {
@@ -422,7 +422,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fe1q74kyeytj4d"
+        "uid": "be38k2hel7nk0c"
       },
       "fieldConfig": {
         "defaults": {
@@ -503,7 +503,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fe1q74kyeytj4d"
+            "uid": "be38k2hel7nk0c"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -522,7 +522,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fe1q74kyeytj4d"
+        "uid": "be38k2hel7nk0c"
       },
       "fieldConfig": {
         "defaults": {
@@ -614,7 +614,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fe1q74kyeytj4d"
+            "uid": "be38k2hel7nk0c"
           },
           "editorMode": "code",
           "expr": "pg_stat_replication_state{datname=\"socialnetwork\"}",
@@ -631,7 +631,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fe1q74kyeytj4d"
+        "uid": "be38k2hel7nk0c"
       },
       "fieldConfig": {
         "defaults": {
@@ -723,7 +723,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fe1q74kyeytj4d"
+        "uid": "be38k2hel7nk0c"
       },
       "fieldConfig": {
         "defaults": {
