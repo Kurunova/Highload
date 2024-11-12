@@ -57,7 +57,7 @@ Select Prometheus
 URL: http://prometheus:9090/
 
 2. Add Dashboard
-Import a dashboard from folder grafana_dashboards 
+Import a dashboard from folder grafana_dashboards (fix datasource id) 
  - SocialNetwork Api Monitor-1729698396153.json, 
  - SocialNetwork Db Master Monitor-1729698386003.json
  - SocialNetwork Db Master PgMonitor-1729698371435.json

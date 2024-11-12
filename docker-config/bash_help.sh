@@ -16,6 +16,8 @@
 # посмотреть содержимое
 # cat /var/lib/postgresql/data/postgresql.conf
 # cat /var/lib/postgresql/data/pg_hba.conf
+# cat /var/lib/postgresql/data/standby.signal
+# ls /var/lib/postgresql/data/
 
 # удалить строку последнюю
 # head -n -1 /var/lib/postgresql/data/pg_hba.conf > /var/lib/postgresql/data/pg_hba.conf.tmp && mv /var/lib/postgresql/data/pg_hba.conf.tmp /var/lib/postgresql/data/pg_hba.conf

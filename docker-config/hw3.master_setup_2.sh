@@ -16,7 +16,7 @@ if [ -z "$(ls -A /master_backup)" ]; then
 else
   echo "Backup directory is not empty."
   echo "Clearing backup directory"
-  rm -rf /master_backup/*
+  rm -rf /master_backup/* /master_backup/.* 2>/dev/null
 fi
 
 echo "Create backup"
