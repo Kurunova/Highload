@@ -7,7 +7,8 @@ echo "Clearing existing data on replica"
 rm -rf /var/lib/postgresql/data/*
 
 echo "Copy backup to the replica"
-cp -r /master_backup/* /var/lib/postgresql/data/
+PGPASSWORD=!QAZ2wsx pg_basebackup -h $MASTER_CONTAINER -D /var/lib/postgresql/data -U replicator -v -P --wal-method=stream
+# cp -r /master_backup/* /var/lib/postgresql/data/
 
 CONFIG_FILE="/var/lib/postgresql/data/postgresql.conf"
 PRIMARY_CONNINFO="primary_conninfo = 'host=socialnetwork-db-master port=5432 user=replicator password=!QAZ2wsx'"
