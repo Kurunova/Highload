@@ -65,15 +65,17 @@ services:
     volumes:
       - db-data-master-1:/var/lib/postgresql/data
       - ./replication-data:/master_backup
-      - ./docker-config/hw3.master_setup.sh:/replication/hw3.master_setup.sh
-      - ./docker-config/hw3.master_setup_2.sh:/replication/hw3.master_setup_2.sh
+      - ./docker-settings/hw3.master_setup.sh:/replication/hw3.master_setup.sh
     ports:
       - "5400:5432"
     networks:
       - sn-network
 
   socialnetwork-db-replica-1:
-    image: postgres:latest
+    # image: postgres:latest
+    build:
+      context: ./docker-settings
+      dockerfile: Dockerfile.PostgreSql.Replica
     container_name: socialnetwork-db-replica-1
     user: "postgres"
     environment:
@@ -82,15 +84,17 @@ services:
       POSTGRES_PASSWORD: "!QAZ2wsx"
     volumes:
       - db-data-replica-1:/var/lib/postgresql/data
-      - ./replication-data:/master_backup
-      - ./docker-config/hw3.replica_setup.sh:/replication/hw3.replica_setup.sh
+      #- ./replication-data:/master_backup
     ports:
       - "5401:5432"
     networks:
       - sn-network
 
   socialnetwork-db-replica-2:
-    image: postgres:latest
+    # image: postgres:latest
+    build:
+      context: ./docker-settings
+      dockerfile: Dockerfile.PostgreSql.Replica
     container_name: socialnetwork-db-replica-2
     user: "postgres"
     environment:
@@ -99,8 +103,7 @@ services:
       POSTGRES_PASSWORD: "!QAZ2wsx"
     volumes:
       - db-data-replica-2:/var/lib/postgresql/data
-      - ./replication-data:/master_backup
-      - ./docker-config/hw3.replica_setup.sh:/replication/hw3.replica_setup.sh
+      #- ./replication-data:/master_backup
     ports:
       - "5402:5432"
     networks:
@@ -129,8 +132,8 @@ services:
     ports:
       - "9190:9187"
     volumes:
-      - ./docker-config/hw3.master_setup.sh:/docker-entrypoint-initdb.d/hw3.master_setup.sh
-      - ./docker-config/postgres_exporter.yml:/postgres_exporter.yml
+      - ./docker-settings/hw3.master_setup.sh:/docker-entrypoint-initdb.d/hw3.master_setup.sh
+      - ./docker-settings/postgres_exporter.yml:/postgres_exporter.yml
     depends_on:
       - socialnetwork-db-master
     networks:
@@ -144,7 +147,7 @@ services:
     ports:
       - "9191:9187"
     volumes:
-      - ./docker-config/postgres_exporter.yml:/postgres_exporter.yml
+      - ./docker-settings/postgres_exporter.yml:/postgres_exporter.yml
     depends_on:
       - socialnetwork-db-replica-1
     networks:
@@ -158,7 +161,7 @@ services:
     ports:
       - "9192:9187"
     volumes:
-      - ./docker-config/postgres_exporter.yml:/postgres_exporter.yml
+      - ./docker-settings/postgres_exporter.yml:/postgres_exporter.yml
     depends_on:
       - socialnetwork-db-replica-2
     networks:
@@ -168,7 +171,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./docker-config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./docker-settings/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     ports:
       - "9090:9090"

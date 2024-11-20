@@ -1,0 +1,15 @@
+# slave/Dockerfile
+FROM postgres:latest
+
+# Copy the entrypoint script
+COPY hw3.replica_entrypoint.sh /usr/local/bin/hw3.replica_entrypoint.sh
+
+# Ensure the entrypoint script is executable
+RUN chmod +x /usr/local/bin/hw3.replica_entrypoint.sh
+
+# Switch to the postgres user
+USER postgres_user
+
+# Set entrypoint to execute the script before starting PostgreSQL
+ENTRYPOINT ["/usr/local/bin/hw3.replica_entrypoint.sh"]
+CMD ["postgres"]

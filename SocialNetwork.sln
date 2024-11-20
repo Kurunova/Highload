@@ -7,12 +7,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{AE5135
 		hw3.1.docker-compose.yml = hw3.1.docker-compose.yml
 		README.md = README.md
 		hw3.2.docker-compose.yml = hw3.2.docker-compose.yml
-		docker-config\prometheus.yml = docker-config\prometheus.yml
-		docker-config\bash_help.sh = docker-config\bash_help.sh
-		docker-config\hw3.master_setup.sh = docker-config\hw3.master_setup.sh
+		docker-settings\prometheus.yml = docker-settings\prometheus.yml
+		docker-settings\bash_help.sh = docker-settings\bash_help.sh
+		docker-settings\hw3.master_setup.sh = docker-settings\hw3.master_setup.sh
 		postman_collections\hw1.SocialNetworkAPI.postman_collection.json = postman_collections\hw1.SocialNetworkAPI.postman_collection.json
-		docker-config\hw3.replica_setup.sh = docker-config\hw3.replica_setup.sh
-		docker-config\hw3.master_setup_2.sh = docker-config\hw3.master_setup_2.sh
+		docker-settings\Dockerfile.PostgreSql.Replica = docker-settings\Dockerfile.PostgreSql.Replica
+		docker-settings\hw3.replica_entrypoint.sh = docker-settings\hw3.replica_entrypoint.sh
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetworkApi", "src\SocialNetworkApi\SocialNetworkApi.csproj", "{AEC279F3-C019-470D-9615-01B4D2DAF7D0}"
