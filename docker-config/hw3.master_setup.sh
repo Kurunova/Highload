@@ -17,7 +17,7 @@ echo "Creating new pg_hba.conf"
 echo "# PostgreSQL client authentication configuration file
 host    replication     replicator      0.0.0.0/0               md5
 host    all             all             0.0.0.0/0               md5
-local   all             postgres                                trust
+local   all             postgres_user                                trust
 " > /var/lib/postgresql/data/pg_hba.conf
 
 echo "Checking if user 'replicator' exists"
