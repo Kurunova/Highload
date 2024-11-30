@@ -51,32 +51,36 @@ public class UserRepository : BaseRepository, IUserRepository
 		return users.ToArray();
 	}
 
-	public async Task<long> Create(User user, CancellationToken cancellationToken)
+	public async Task<User> Create(User user, CancellationToken cancellationToken)
 	{
-		string sql = @"INSERT INTO Users (Login, PasswordHash, Salt, FirstName, SecondName, Birthdate, Gender, City, Hobbies) 
-			VALUES (@login, @passwordHash, @salt, @firstName, @secondName, @birthdate, CAST(@gender as public.gender_type), @city, @hobbies) RETURNING Id";
+		string sql = @"
+			INSERT INTO Users (Login, PasswordHash, Salt, FirstName, LastName, Birthdate, Gender, City, Hobbies) 
+			VALUES (@login, @passwordHash, @salt, @firstName, @lastName, @birthdate, CAST(@gender as public.gender_type), @city, @hobbies) 
+			RETURNING Id, Login, PasswordHash, Salt, FirstName, LastName, Birthdate, Gender, City, Hobbies";
 		
-		var insertedId = await QuerySingleOrDefaultAsync<long>(sql, new
+		var insertedUser = await ExecuteAsync<User>(sql, new
 		{
 			login = user.Login,
 			passwordHash = user.PasswordHash,
 			salt = user.Salt,
 			firstName = user.FirstName,
-			secondName = user.LastName,
+			lastName = user.LastName,
 			birthdate = user.Birthdate,
 			gender = user.Gender.ToString(),
 			city = user.City,
 			hobbies = user.Hobbies
 		}, cancellationToken);
 		
-		return insertedId;
+		_logger.LogInformation($"User created: {insertedUser?.Id}");
+		
+		return insertedUser;
 	}
 
 	public async Task Update(User user, CancellationToken cancellationToken)
 	{
 		string sql = @"UPDATE Users 
 			SET FirstName = @firstName, 
-			    SecondName = @secondName, 
+			    LastName = @lastName, 
 			    Birthdate = @birthdate, 
 			    Gender = CAST(@gender as public.gender_type), 
 			    City = @city,
@@ -86,7 +90,7 @@ public class UserRepository : BaseRepository, IUserRepository
 		await ExecuteAsync(sql, new
 		{
 			firstName = user.FirstName,
-			secondName = user.LastName,
+			lastName = user.LastName,
 			birthdate = user.Birthdate,
 			gender = user.Gender.ToString(),
 			city = user.City,

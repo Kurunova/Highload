@@ -23,7 +23,7 @@ public class UsersController : ControllerBase
 	public async Task<IActionResult> Register([FromBody] CreateUser user)
 	{
 		var registered = await _userService.Create(user, CancellationToken.None);
-		return CreatedAtAction(nameof(Register), new { userId = registered.Id });
+		return CreatedAtAction(nameof(Register), new { userId = registered?.Id });
 	}
 
 	[HttpPost("login")]

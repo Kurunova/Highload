@@ -44,11 +44,9 @@ public class UserService : IUserService
 			Hobbies = createUser.Hobbies
 		};
 		
-		var registeredId = await _userRepository.Create(newUser, cancellationToken);
-
-		var user = await _userRepository.GetById(registeredId, cancellationToken);
+		var registeredUser = await _userRepository.Create(newUser, cancellationToken);
 		
-		return user.ToUserInfo();
+		return registeredUser.ToUserInfo();
 	}
 	
 	public async Task<UserInfo> Login(LoginUser loginUser, CancellationToken cancellationToken)
