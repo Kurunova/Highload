@@ -17,8 +17,14 @@
 # cat /var/lib/postgresql/data/postgresql.conf
 # cat /var/lib/postgresql/data/pg_hba.conf
 # cat /var/lib/postgresql/data/standby.signal
-# ls /var/lib/postgresql/data/
 
+# ls /var/lib/postgresql/data/
+# touch /var/lib/postgresql/data/standby.signal
+# cat /var/lib/postgresql/data/postgresql.conf
+# head -n -1 /var/lib/postgresql/data/postgresql.conf > /var/lib/postgresql/data/postgresql.conf.tmp && mv /var/lib/postgresql/data/postgresql.conf.tmp /var/lib/postgresql/data/postgresql.conf
+# echo "primary_conninfo = 'host=socialnetwork-db-master port=5432 user=replicator password=!QAZ2wsx'" >> /var/lib/postgresql/data/postgresql.conf
+# echo "primary_conninfo = 'host=socialnetwork-db-replica-1 port=5432 user=replicator password=!QAZ2wsx'" >> /var/lib/postgresql/data/postgresql.conf
+ 
 # удалить строку последнюю
 # head -n -1 /var/lib/postgresql/data/pg_hba.conf > /var/lib/postgresql/data/pg_hba.conf.tmp && mv /var/lib/postgresql/data/pg_hba.conf.tmp /var/lib/postgresql/data/pg_hba.conf
 # head -n -1 /var/lib/postgresql/data/postgresql.conf > /var/lib/postgresql/data/postgresql.conf.tmp && mv /var/lib/postgresql/data/postgresql.conf.tmp /var/lib/postgresql/data/postgresql.conf
