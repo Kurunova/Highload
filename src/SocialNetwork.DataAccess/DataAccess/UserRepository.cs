@@ -137,4 +137,15 @@ public class UserRepository : BaseRepository, IUserRepository
 		var friendIds = await QueryAsync<long>(sql, new { userId }, cancellationToken);
 		return friendIds.ToList();
 	}
+	
+	public async Task<List<long>> GetSubscriberIds(long publisherId, CancellationToken cancellationToken)
+	{
+		var sql = @"
+        SELECT UserId
+        FROM UserFriends
+        WHERE FriendId = @publisherId";
+
+		var friendIds = await QueryAsync<long>(sql, new { publisherId }, cancellationToken);
+		return friendIds.ToList();
+	}
 }

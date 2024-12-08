@@ -95,17 +95,17 @@ public class PostService : IPostService
 		foreach (var post in posts)
 		{
 			var postJson = JsonConvert.SerializeObject(post);
-			await _redisCacheService.AddToFeedAsync(userId, postJson, post.CreatedAt.Ticks);
+			await _redisCacheService.AddFeedAsync(userId, postJson, post.CreatedAt.Ticks);
 		}
 	}
 	
 	private async Task UpdateFeedInCache(Post post, CancellationToken cancellationToken)
 	{
-		var friendIds = await _userRepository.GetFriendIds(post.AuthorUserId, cancellationToken);
-		foreach (var friendId in friendIds)
+		var subscriberIds = await _userRepository.GetSubscriberIds(post.AuthorUserId, cancellationToken);
+		foreach (var subscriberId in subscriberIds)
 		{
 			var postJson = JsonConvert.SerializeObject(post);
-			await _redisCacheService.AddToFeedAsync(friendId, postJson, post.CreatedAt.Ticks);
+			await _redisCacheService.AddToFeedAsync(subscriberId, postJson, post.CreatedAt.Ticks);
 		}
 	}
 }

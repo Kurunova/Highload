@@ -32,6 +32,7 @@ services:
       - Jwt__Audience=socialnetwork.com
       - Cache__Enable=True
       - Cache__RedisConnection=redis:6379
+      - Cache__TimeToLive=01:00:00
       - Serilog__Using__0=Serilog.Sinks.Console
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console
@@ -124,15 +125,17 @@ services:
       - redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
 
-  redisinsight:
-    image: redis/redisinsight:latest
-    container_name: redisinsight
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
     ports:
-      - "8002:8001" 
-    networks:
-      - sn-network
+      - "8081:8081"
+    environment:
+      REDIS_HOSTS: "local:redis:6379"
     depends_on:
       - redis
+    networks:
+      - sn-network
 
   # exporter for docker container metrics
   cadvisor:
