@@ -35,6 +35,7 @@ public static class ServiceCollectionExtensions
 		serviceCollection.AddSingleton<IPostgresConnectionFactory, PostgresConnectionFactory>();
 		serviceCollection.AddTransient<IUserRepository, UserRepository>();
 		serviceCollection.AddTransient<IPostRepository, PostRepository>();
+		serviceCollection.AddTransient<IDialogRepository, DialogRepository>();
 		
 		return serviceCollection;
 	}

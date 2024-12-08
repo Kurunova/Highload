@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Models.Posts;
 using SocialNetwork.Domain.Services;
@@ -8,7 +7,7 @@ namespace SocialNetworkApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PostsController : ControllerBase
+public class PostsController : BaseController
 {
     private readonly IPostService _postService;
 
@@ -58,17 +57,5 @@ public class PostsController : ControllerBase
         var currentUserId = GetCurrentUserId();
         var posts = await _postService.GetFeed(currentUserId, offset, limit, CancellationToken.None);
         return Ok(posts);
-    }
-
-    private long GetCurrentUserId()
-    {
-        var userIdClaim = User.Claims?.FirstOrDefault(c => c.Type == "userId");
-        if (User.Identity?.IsAuthenticated == true 
-            && userIdClaim != null && long.TryParse(userIdClaim.Value, out var userId))
-        {
-            return userId;
-        }
-        
-        throw new UnauthorizedAccessException("User is not authenticated.");
     }
 }
