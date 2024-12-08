@@ -31,7 +31,7 @@ Grafana: http://localhost:3000/
 Prometheus: http://localhost:9090/, check exporters statuses http://localhost:9090/targets
 cadvisor: http://localhost:8080/
 Postgres exporter: http://localhost:9190/
-Redis UI: http://localhost:8002/
+Redis UI: http://localhost:8081/
 Redis exporter: http://localhost:9121/
 
 
