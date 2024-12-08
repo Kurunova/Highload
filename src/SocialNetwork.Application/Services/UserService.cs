@@ -85,4 +85,17 @@ public class UserService : IUserService
 		
 		return user.ToUserInfo();
 	}
+	
+	public async Task AddFriend(long userId, long friendId, CancellationToken cancellationToken)
+	{
+		if (userId == friendId)
+			throw new ValidationException("You cannot add yourself as a friend.");
+
+		await _userRepository.AddFriend(userId, friendId, cancellationToken);
+	}
+
+	public async Task RemoveFriend(long userId, long friendId, CancellationToken cancellationToken)
+	{
+		await _userRepository.RemoveFriend(userId, friendId, cancellationToken);
+	}
 }

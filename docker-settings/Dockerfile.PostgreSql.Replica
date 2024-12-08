@@ -8,8 +8,10 @@ COPY hw3.replica_entrypoint.sh /usr/local/bin/hw3.replica_entrypoint.sh
 RUN chmod +x /usr/local/bin/hw3.replica_entrypoint.sh
 
 # Switch to the postgres user
-USER postgres_user
+# USER postgres_user
+USER postgres
 
 # Set entrypoint to execute the script before starting PostgreSQL
+# ENTRYPOINT ["echo", "Testing entrypoint script"]
 ENTRYPOINT ["/usr/local/bin/hw3.replica_entrypoint.sh"]
 CMD ["postgres"]

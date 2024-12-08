@@ -24,7 +24,8 @@ public class JwtTokenService
 
 		var claims = new List<Claim>
 		{
-			new(JwtRegisteredClaimNames.Sub, userInfo.Id.ToString()),
+			//new(JwtRegisteredClaimNames.Sub, userInfo.Id.ToString()),
+			new("userId", userInfo.Id.ToString()),
 			new(JwtRegisteredClaimNames.GivenName, userInfo.FirstName),
 			new(JwtRegisteredClaimNames.FamilyName, userInfo.LastName),
 			new("birthdate", userInfo.Birthdate.ToString("yyyy-MM-dd")),
@@ -36,7 +37,7 @@ public class JwtTokenService
 			_jwtSettings.Issuer,
 			_jwtSettings.Audience,
 			claims: claims,
-			expires: DateTime.Now.AddSeconds(TimeSpan.FromSeconds(_jwtSettings.ExpirationSeconds).Seconds),
+			expires: DateTime.Now.AddSeconds(TimeSpan.FromSeconds(_jwtSettings.ExpirationSeconds).TotalSeconds),
 			signingCredentials: credentials);
 
 		var jwtSecurityTokenHandler =  new JwtSecurityTokenHandler();

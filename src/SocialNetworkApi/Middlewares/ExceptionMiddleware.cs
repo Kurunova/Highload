@@ -1,5 +1,5 @@
-﻿using System.Net;
-using SocialNetwork.Application.Exceptions;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace SocialNetworkApi.Middlewares;
 

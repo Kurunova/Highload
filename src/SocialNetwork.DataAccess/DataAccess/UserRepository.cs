@@ -107,4 +107,45 @@ public class UserRepository : BaseRepository, IUserRepository
 			id = id
 		}, cancellationToken);
 	}
+	
+	public async Task AddFriend(long userId, long friendId, CancellationToken cancellationToken)
+	{
+		var sql = @"
+        INSERT INTO UserFriends (UserId, FriendId)
+        VALUES (@userId, @friendId)
+        ON CONFLICT DO NOTHING";
+
+		await ExecuteAsync(sql, new { userId, friendId }, cancellationToken);
+	}
+
+	public async Task RemoveFriend(long userId, long friendId, CancellationToken cancellationToken)
+	{
+		var sql = @"
+        DELETE FROM UserFriends 
+        WHERE UserId = @userId AND FriendId = @friendId";
+
+		await ExecuteAsync(sql, new { userId, friendId }, cancellationToken);
+	}
+	
+	public async Task<List<long>> GetFriendIds(long userId, CancellationToken cancellationToken)
+	{
+		var sql = @"
+        SELECT FriendId
+        FROM UserFriends
+        WHERE UserId = @userId";
+
+		var friendIds = await QueryAsync<long>(sql, new { userId }, cancellationToken);
+		return friendIds.ToList();
+	}
+	
+	public async Task<List<long>> GetSubscriberIds(long publisherId, CancellationToken cancellationToken)
+	{
+		var sql = @"
+        SELECT UserId
+        FROM UserFriends
+        WHERE FriendId = @publisherId";
+
+		var friendIds = await QueryAsync<long>(sql, new { publisherId }, cancellationToken);
+		return friendIds.ToList();
+	}
 }

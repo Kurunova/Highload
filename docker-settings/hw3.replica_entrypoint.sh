@@ -1,4 +1,7 @@
 #!/bin/bash
+
+echo "Starting replica setup..."
+
 set -e
 MASTER_CONTAINER="socialnetwork-db-master"
 POSTGRES_DATA="/var/lib/postgresql/data"

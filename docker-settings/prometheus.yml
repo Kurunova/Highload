@@ -21,3 +21,7 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['exporter-postgres-replica-2:9187']
+
+  - job_name: "redis"
+    static_configs:
+      - targets: [ "redis-exporter:9121" ]
