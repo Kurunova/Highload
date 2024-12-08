@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
 	public static IServiceCollection AddApplication(this IServiceCollection serviceCollection, IConfiguration configuration)
 	{
 		serviceCollection.AddTransient<IUserService, UserService>();
+		serviceCollection.AddTransient<IPostService, PostService>();
 		return serviceCollection;
 	}
 }

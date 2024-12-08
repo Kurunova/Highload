@@ -55,4 +55,31 @@ public class UsersController : ControllerBase
 
 		return Ok(users);
 	}
+	
+	[Authorize]
+	[HttpPut("friend/set/{userId}")]
+	public async Task<IActionResult> AddFriend(long userId)
+	{
+		var currentUserId = GetCurrentUserId();
+		await _userService.AddFriend(currentUserId, userId, CancellationToken.None);
+		return Ok(new { Message = "Friend added successfully." });
+	}
+
+	[Authorize]
+	[HttpPut("friend/delete/{userId}")]
+	public async Task<IActionResult> RemoveFriend(long userId)
+	{
+		var currentUserId = GetCurrentUserId();
+		await _userService.RemoveFriend(currentUserId, userId, CancellationToken.None);
+		return Ok(new { Message = "Friend removed successfully." });
+	}
+
+	private long GetCurrentUserId()
+	{
+		if (User.Identity?.IsAuthenticated == true && long.TryParse(User.Identity.Name, out var userId))
+		{
+			return userId;
+		}
+		throw new UnauthorizedAccessException("User is not authenticated.");
+	}
 }

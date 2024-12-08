@@ -10,4 +10,6 @@ public interface IUserRepository
 	Task<User> Create(User user, CancellationToken cancellationToken);
 	Task Update(User user, CancellationToken cancellationToken);
 	Task Delete(long id, CancellationToken cancellationToken);
+	Task AddFriend(long userId, long friendId, CancellationToken cancellationToken);
+	Task RemoveFriend(long userId, long friendId, CancellationToken cancellationToken);
 }
