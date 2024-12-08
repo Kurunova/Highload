@@ -16,7 +16,9 @@ docker-compose -f hw3.2.docker-compose.yml up -d --no-deps --force-recreate soci
 docker-compose -f hw3.2.docker-compose.yml up socialnetwork-db-replica-1
 docker-compose -f hw3.2.docker-compose.yml stop socialnetwork-db-replica-1
 docker-compose -f hw3.2.docker-compose.yml down -v
- 
+
+docker-compose -f hw4.docker-compose.yml up -d --build --force-recreate
+
 ```
 
 Application API: http://localhost:5001/swagger/index.html
