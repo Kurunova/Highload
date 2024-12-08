@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Models;
 using SocialNetwork.Domain.Services;
@@ -76,10 +77,13 @@ public class UsersController : ControllerBase
 
 	private long GetCurrentUserId()
 	{
-		if (User.Identity?.IsAuthenticated == true && long.TryParse(User.Identity.Name, out var userId))
+		var userIdClaim = User.Claims?.FirstOrDefault(c => c.Type == "userId");
+		if (User.Identity?.IsAuthenticated == true 
+		    && userIdClaim != null && long.TryParse(userIdClaim.Value, out var userId))
 		{
 			return userId;
 		}
+        
 		throw new UnauthorizedAccessException("User is not authenticated.");
 	}
 }

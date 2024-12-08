@@ -11,14 +11,14 @@ public class PostRepository : BaseRepository, IPostRepository
 	{
 	}
 	
-	public async Task<long> CreatePost(long userId, string text, CancellationToken cancellationToken)
+	public async Task<Post> CreatePost(long userId, string text, CancellationToken cancellationToken)
 	{
 		var sql = @"
         INSERT INTO Posts (AuthorUserId, Text)
         VALUES (@userId, @text)
-        RETURNING Id";
+        RETURNING Id, AuthorUserId, Text, CreatedAt";
 
-		return await ExecuteAsync<long>(sql, new { userId, text }, cancellationToken);
+		return await ExecuteAsync<Post>(sql, new { userId, text }, cancellationToken);
 	}
 
 	public async Task UpdatePost(long userId, long postId, string text, CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ public class PostRepository : BaseRepository, IPostRepository
 		return await QuerySingleOrDefaultAsync<Post>(sql, new { postId }, cancellationToken);
 	}
 
-	public async Task<Post[]> GetFeed(long userId, int offset, int limit, CancellationToken cancellationToken)
+	public async Task<List<Post>> GetFeed(long userId, int offset, int limit, CancellationToken cancellationToken)
 	{
 		var sql = @"
         SELECT p.*
@@ -57,6 +57,6 @@ public class PostRepository : BaseRepository, IPostRepository
         ORDER BY p.CreatedAt DESC
         OFFSET @offset LIMIT @limit";
 
-		return (await QueryAsync<Post>(sql, new { userId, offset, limit }, cancellationToken)).ToArray();
+		return (await QueryAsync<Post>(sql, new { userId, offset, limit }, cancellationToken)).ToList();
 	}
 }

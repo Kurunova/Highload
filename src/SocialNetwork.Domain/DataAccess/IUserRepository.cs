@@ -12,4 +12,5 @@ public interface IUserRepository
 	Task Delete(long id, CancellationToken cancellationToken);
 	Task AddFriend(long userId, long friendId, CancellationToken cancellationToken);
 	Task RemoveFriend(long userId, long friendId, CancellationToken cancellationToken);
+	Task<List<long>> GetFriendIds(long userId, CancellationToken cancellationToken);
 }

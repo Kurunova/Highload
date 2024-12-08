@@ -11,6 +11,8 @@ volumes:
     name: socialnetwork-grafana-data
   prometheus-data:
     name: socialnetwork-prometheus-data
+  redis-data:
+    name: socialnetwork-redis-data
 
 services:
   socialnetwork-api-1:
@@ -28,6 +30,8 @@ services:
       - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
       - Jwt__Issuer=socialnetwork.com
       - Jwt__Audience=socialnetwork.com
+      - Cache__Enable=True
+      - Cache__RedisConnection=redis:6379
       - Serilog__Using__0=Serilog.Sinks.Console
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console
@@ -109,6 +113,27 @@ services:
     networks:
       - sn-network
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - sn-network
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - "8002:8001" 
+    networks:
+      - sn-network
+    depends_on:
+      - redis
+
   # exporter for docker container metrics
   cadvisor:
     image: gcr.io/google-containers/cadvisor:latest
@@ -164,6 +189,19 @@ services:
       - ./docker-settings/postgres_exporter.yml:/postgres_exporter.yml
     depends_on:
       - socialnetwork-db-replica-2
+    networks:
+      - sn-network
+  
+  # exporter for redis
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    ports:
+      - "9121:9121" 
+    environment:
+      REDIS_ADDR: "redis:6379"
+    depends_on:
+      - redis
     networks:
       - sn-network
 
