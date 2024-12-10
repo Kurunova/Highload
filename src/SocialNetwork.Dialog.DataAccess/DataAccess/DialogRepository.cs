@@ -12,7 +12,7 @@ public class DialogRepository : BaseRepository, IDialogRepository
 	public async Task AddMessageAsync(DialogMessage message, CancellationToken cancellationToken)
 	{
 		var sql = @"
-            INSERT INTO dialog_messages (from_user_id, to_user_id, text, sent_at)
+            INSERT INTO citus.dialog_messages (from_user_id, to_user_id, text, sent_at)
             VALUES (@From, @To, @Text, @SentAt)";
         
 		await ExecuteAsync(sql, message, cancellationToken);
@@ -22,7 +22,7 @@ public class DialogRepository : BaseRepository, IDialogRepository
 	{
 		var sql = @"
             SELECT from_user_id AS From, to_user_id AS To, text, sent_at AS SentAt
-            FROM dialog_messages
+            FROM citus.dialog_messages
             WHERE (from_user_id = @UserId1 AND to_user_id = @UserId2)
                OR (from_user_id = @UserId2 AND to_user_id = @UserId1)
             ORDER BY sent_at";

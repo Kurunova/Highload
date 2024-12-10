@@ -54,6 +54,11 @@ FROM citus_shards GROUP BY nodename;
 ```shell
 INSERT INTO dialog_messages (from_user_id, to_user_id, text, sent_at)
 VALUES (1, 2, 'Hello', '2024-12-10 12:00:00');
+
+explain select *
+from dialog_messages
+where from_user_id = 1
+limit 1000;
 ```
 
 
