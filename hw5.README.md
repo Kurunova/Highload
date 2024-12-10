@@ -73,6 +73,18 @@ ORDER BY sent_at;
 explain select *
 from dialog_messages
 limit 1000;
+
+DO $$
+DECLARE 
+    i INT;
+BEGIN
+    FOR i IN 1..32 LOOP
+        INSERT INTO dialog_messages (dialog_id, from_user_id, to_user_id, text, sent_at)
+        VALUES ('1000_' || (1005257 + i), 1000 + i, 1005257 + i, 'Hello ' || i, '2024-12-10 12:00:00');
+    END LOOP;
+END $$;
+
+
 ```
 
 ====================
@@ -81,16 +93,10 @@ limit 1000;
 
 Добавлены в docker-compose: citus-worker-3
 
-Запускаем с новыми настройками
+Запускаем 3 воркер отдельно
 ```shell
-docker-compose -f hw5.2.docker-compose.yml up -d --build --force-recreate
+docker-compose -f hw5.2.docker-compose.yml up -d citus-worker-3
 ```
-
-```shell
-docker cp ./docker-settings/citus-coordinator/.pgpass citus-coordinator:/var/lib/postgresql/.pgpass
-docker-compose -f hw5.2.docker-compose.yml up -d citus-coordinator
-```
-
 
 Регистрируем воркера
 ```sql
@@ -108,9 +114,10 @@ SELECT nodename, count(*)
 FROM citus_shards GROUP BY nodename;
 ```
 
+Видим что надо сделать ребалансировку потому что не распределено на все 3
+
 Ребалансировка после добавления новых воркеров
 ```sql
-SELECT rebalance_table_shards('dialog_messages');
 SELECT citus_rebalance_start();
 ```
 
@@ -118,6 +125,8 @@ SELECT citus_rebalance_start();
 ```sql
 SELECT * FROM citus_rebalance_status();
 ```
+
+Видим ошибку в ребалансировке и надо установить  wal_level logical
 
 Установка wal_level = logical чтобы узлы могли переносить данные:
 ```sql
@@ -128,8 +137,21 @@ SELECT run_command_on_workers('alter system set wal_level = logical');
 ```sql
 show wal_level;
 ```
-     
 
+Перезагрузка конфига
+```sql
+SELECT pg_reload_conf();
+```
+
+Перезапуск воркера
+```shell
+docker-compose -f hw5.2.docker-compose.yml up -d citus-worker-3
+```
+
+Проверка wal_level
+```sql
+show wal_level;
+```
 
 
 ## Environment
@@ -196,6 +218,7 @@ docker exec -it citus-coordinator cat /var/lib/postgresql/data/pg_hba.conf
 docker exec -it citus-coordinator cat  /var/lib/postgresql/.pgpass
 docker exec -it citus-worker-1 cat /var/lib/postgresql/data/pg_hba.conf
 docker exec -it citus-worker-2 cat /var/lib/postgresql/data/pg_hba.conf
+docker exec -it citus-worker-3 cat /var/lib/postgresql/data/postgresql.conf
 ```
 
 
@@ -207,4 +230,27 @@ docker exec -it socialnetwork-db-master pg_dump -U postgres_user -d socialnetwor
 ```shell
 docker exec -i citus-coordinator psql -U postgres_user -d socialnetwork < dialog_messages_data.sql
 Get-Content dialog_messages_data.sql | docker exec -i citus-coordinator psql -U postgres_user -d socialnetwork
+```
+
+echo "host    all             all             0.0.0.0/0               scram-sha-256" >> /var/lib/postgresql/data/pg_hba.conf
+```shell
+docker-compose -f hw5.2.docker-compose.yml up -d --build --force-recreate
+```
+
+```shell
+docker exec -it citus-coordinator psql -U postgres_user -c "SELECT pg_reload_conf();"
+docker-compose -f hw5.2.docker-compose.yml stop citus-coordinator
+docker-compose -f hw5.2.docker-compose.yml up -d citus-coordinator
+
+docker exec -it citus-worker-1 psql -U postgres_user -c "SELECT pg_reload_conf();"
+docker-compose -f hw5.2.docker-compose.yml stop citus-worker-1
+docker-compose -f hw5.2.docker-compose.yml up -d citus-worker-1
+
+docker exec -it citus-worker-2 psql -U postgres_user -c "SELECT pg_reload_conf();"
+docker-compose -f hw5.2.docker-compose.yml stop citus-worker-2
+docker-compose -f hw5.2.docker-compose.yml up -d citus-worker-2
+
+docker exec -it citus-worker-3 psql -U postgres_user -c "SELECT pg_reload_conf();"
+docker-compose -f hw5.2.docker-compose.yml stop citus-worker-3
+docker-compose -f hw5.2.docker-compose.yml up -d citus-worker-3
 ```

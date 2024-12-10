@@ -167,6 +167,8 @@ services:
       - citus-worker-1-data:/var/lib/postgresql/data
     ports:
       - "5501:5432"
+    depends_on:
+      - citus-coordinator
     networks:
       - sn-network
   
@@ -181,6 +183,8 @@ services:
       - citus-worker-2-data:/var/lib/postgresql/data
     ports:
       - "5502:5432"
+    depends_on:
+      - citus-coordinator
     networks:
       - sn-network
 
@@ -195,6 +199,8 @@ services:
       - citus-worker-3-data:/var/lib/postgresql/data
     ports:
       - "5503:5432"
+    depends_on:
+      - citus-coordinator
     networks:
       - sn-network
 
