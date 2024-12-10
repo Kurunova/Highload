@@ -19,6 +19,8 @@ volumes:
     name: citus-worker-1-data
   citus-worker-2-data:
     name: citus-worker-2-data
+  citus-worker-3-data:
+    name: citus-worker-3-data
 
 services:
   socialnetwork-api-1:
@@ -122,6 +124,24 @@ services:
       - sn-network
 
   # sharding
+#  citus-membership-manager:
+#    image: citusdata/membership-manager:latest
+#    container_name: citus-membership-manager
+#    depends_on:
+#      - citus-coordinator
+#      - citus-worker-1
+#      - citus-worker-2
+#      - citus-worker-3
+#    environment:
+#      COORDINATOR_HOST: citus-coordinator
+#      COORDINATOR_PORT: 5432
+#      COORDINATOR_DATABASE: socialnetwork
+#      COORDINATOR_USERNAME: postgres_user
+#      COORDINATOR_PASSWORD: "!QAZ2wsx"
+#      WORKER_NODES: citus-worker-1:5432,citus-worker-2:5432,citus-worker-3:5432
+#    networks:
+#      - sn-network
+
   citus-coordinator:
     image: citusdata/citus:latest
     container_name: citus-coordinator
@@ -161,6 +181,20 @@ services:
       - citus-worker-2-data:/var/lib/postgresql/data
     ports:
       - "5502:5432"
+    networks:
+      - sn-network
+
+  citus-worker-3:
+    image: citusdata/citus:latest
+    container_name: citus-worker-3
+    environment:
+      POSTGRES_DB: socialnetwork
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: "!QAZ2wsx"
+    volumes:
+      - citus-worker-3-data:/var/lib/postgresql/data
+    ports:
+      - "5503:5432"
     networks:
       - sn-network
 

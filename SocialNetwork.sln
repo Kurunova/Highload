@@ -14,8 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{AE5135
 		docker-settings\Dockerfile.PostgreSql.Replica = docker-settings\Dockerfile.PostgreSql.Replica
 		docker-settings\hw3.replica_entrypoint.sh = docker-settings\hw3.replica_entrypoint.sh
 		hw4.docker-compose.yml = hw4.docker-compose.yml
-		hw5.docker-compose.yml = hw5.docker-compose.yml
+		hw5.1.docker-compose.yml = hw5.1.docker-compose.yml
 		hw5.README.md = hw5.README.md
+		hw5.2.docker-compose.yml = hw5.2.docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetworkApi", "src\SocialNetworkApi\SocialNetworkApi.csproj", "{AEC279F3-C019-470D-9615-01B4D2DAF7D0}"
