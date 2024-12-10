@@ -77,8 +77,8 @@ public sealed class Startup
 		
 		applicationBuilder.UseEndpoints(endpointRouteBuilder =>
 		{
-			endpointRouteBuilder.MapControllers();
 			endpointRouteBuilder.MapHub<PostFeedHub>("/post/feed/posted"); // Маршрут для WebSocket
+			endpointRouteBuilder.MapControllers();
 		});
 	}
 }
