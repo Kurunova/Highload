@@ -2,7 +2,7 @@
 using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Entities;
 
-namespace SocialNetwork.DataAccess.DataAccess;
+namespace SocialNetwork.Dialog.DataAccess;
 
 public class DialogRepository : BaseRepository, IDialogRepository
 {

@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{AE5135
 		docker-settings\Dockerfile.PostgreSql.Replica = docker-settings\Dockerfile.PostgreSql.Replica
 		docker-settings\hw3.replica_entrypoint.sh = docker-settings\hw3.replica_entrypoint.sh
 		hw4.docker-compose.yml = hw4.docker-compose.yml
+		hw5.docker-compose.yml = hw5.docker-compose.yml
+		hw5.README.md = hw5.README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetworkApi", "src\SocialNetworkApi\SocialNetworkApi.csproj", "{AEC279F3-C019-470D-9615-01B4D2DAF7D0}"
@@ -25,6 +27,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Application", "src\SocialNetwork.Application\SocialNetwork.Application.csproj", "{2D90B652-EDC6-43EE-B509-541BD0225015}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.DbMigrator", "src\SocialNetwork.DbMigrator\SocialNetwork.DbMigrator.csproj", "{F9E2F6E2-348B-4A06-8499-C347413549C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Dialog.DataAccess", "src\SocialNetwork.Dialog.DataAccess\SocialNetwork.Dialog.DataAccess.csproj", "{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +56,10 @@ Global
 		{F9E2F6E2-348B-4A06-8499-C347413549C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9E2F6E2-348B-4A06-8499-C347413549C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9E2F6E2-348B-4A06-8499-C347413549C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AEC279F3-C019-470D-9615-01B4D2DAF7D0} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
@@ -59,5 +67,6 @@ Global
 		{4D4F06EC-54E0-4B27-9D1C-6E14FBD925D3} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 		{2D90B652-EDC6-43EE-B509-541BD0225015} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 		{F9E2F6E2-348B-4A06-8499-C347413549C2} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
+		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 	EndGlobalSection
 EndGlobal

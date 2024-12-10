@@ -1,0 +1,13 @@
+FROM citusdata/citus:latest
+
+# Копируем настройки pg_hba.conf
+COPY citus-coordinator/pg_hba.conf /var/lib/postgresql/data/pg_hba.conf
+
+# Копируем файл .pgpass
+COPY citus-coordinator/.pgpass /var/lib/postgresql/.pgpass
+
+# Устанавливаем правильные права доступа
+RUN chmod 600 /var/lib/postgresql/.pgpass
+
+# Открываем порт PostgreSQL
+EXPOSE 5432

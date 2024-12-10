@@ -2,6 +2,7 @@
 using Serilog;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
+using SocialNetwork.Dialog.DataAccess.Extensions;
 using SocialNetworkApi.Extensions;
 using SocialNetworkApi.Middlewares;
 
@@ -23,6 +24,7 @@ public sealed class Startup
 	public void ConfigureServices(IServiceCollection serviceCollection)
 	{
 		serviceCollection.AddDatabase(_configuration);
+		serviceCollection.AddDialogDatabase(_configuration);
 		serviceCollection.AddApplication(_configuration);
 		serviceCollection.AddJwt(_configuration);
 
