@@ -21,14 +21,15 @@ public class PostRepository : BaseRepository, IPostRepository
 		return await ExecuteAsync<Post>(sql, new { userId, text }, cancellationToken);
 	}
 
-	public async Task UpdatePost(long userId, long postId, string text, CancellationToken cancellationToken)
+	public async Task<Post> UpdatePost(long userId, long postId, string text, CancellationToken cancellationToken)
 	{
 		var sql = @"
         UPDATE Posts
         SET Text = @text
-        WHERE Id = @postId AND AuthorUserId = @userId";
+        WHERE Id = @postId AND AuthorUserId = @userId
+        RETURNING Id, AuthorUserId, Text, CreatedAt";
 
-		await ExecuteAsync(sql, new { postId, userId, text }, cancellationToken);
+		return await ExecuteAsync<Post>(sql, new { postId, userId, text }, cancellationToken);
 	}
 
 	public async Task DeletePost(long userId, long postId, CancellationToken cancellationToken)
