@@ -4,6 +4,7 @@ using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
 using SocialNetwork.Dialog.DataAccess.Extensions;
 using SocialNetworkApi.Extensions;
+using SocialNetworkApi.Hubs;
 using SocialNetworkApi.Middlewares;
 
 namespace SocialNetworkApi;
@@ -30,6 +31,7 @@ public sealed class Startup
 
 		serviceCollection.AddControllers();
 		serviceCollection.AddEndpointsApiExplorer();
+		serviceCollection.AddSignalR(); // Добавляем SignalR
 		serviceCollection.AddSwaggerGen(c =>
 		{
 			c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -76,6 +78,7 @@ public sealed class Startup
 		applicationBuilder.UseEndpoints(endpointRouteBuilder =>
 		{
 			endpointRouteBuilder.MapControllers();
+			endpointRouteBuilder.MapHub<PostFeedHub>("/post/feed/posted"); // Маршрут для WebSocket
 		});
 	}
 }
