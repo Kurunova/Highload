@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using SocialNetwork.Application.Configurations;
 using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Entities;
@@ -35,7 +34,7 @@ public class PostService : IPostService
 		var post = await _postRepository.CreatePost(userId, text, cancellationToken);
 		
 		if(_redisSettings.Enable)
-			await UpdateFeedInCache(post, cancellationToken);
+			await AppendPostToSubscribers(post, cancellationToken);
 
 		return post;
 	}
@@ -45,12 +44,18 @@ public class PostService : IPostService
 		if (string.IsNullOrWhiteSpace(text))
 			throw new ValidationException("Post text cannot be empty.");
 
-		await _postRepository.UpdatePost(userId, postId, text, cancellationToken);
+		var post = await _postRepository.UpdatePost(userId, postId, text, cancellationToken);;
+		
+		if (_redisSettings.Enable)
+			await _redisCacheService.UpdateFeedInCache(userId, post);
 	}
 
 	public async Task DeletePost(long userId, long postId, CancellationToken cancellationToken)
 	{
 		await _postRepository.DeletePost(userId, postId, cancellationToken);
+		
+		if (_redisSettings.Enable)
+			await _redisCacheService.RemovePostFromFeedInCache(userId, postId);
 	}
 
 	public async Task<Post> GetPostById(long postId, CancellationToken cancellationToken)
@@ -63,49 +68,25 @@ public class PostService : IPostService
 		if(!_redisSettings.Enable)
 			return await _postRepository.GetFeed(userId, offset, limit, cancellationToken);
 		
-		var posts = await GetFeedFromCache(userId);
+		var posts = await _redisCacheService.GetFeedFromCache(userId);
 		if (posts != null)
 			return posts;
 		
-		posts = await _postRepository.GetFeed(userId, 0, 1000, cancellationToken);
-		await CreateFeedInCache(userId, posts);
-
-		return posts;
-	}
-
-	private async Task<List<Post>> GetFeedFromCache(long userId)
-	{
-		var feedJson = await _redisCacheService.GetFeedAsync(userId);
-		if (feedJson.Length <= 0)
-			return null;
-
-		var posts = new List<Post>();
-		foreach (var json in feedJson)
-		{
-			var post = JsonConvert.DeserializeObject<Post>(json);
-			if (post != null)
-				posts.Add(post);
-		}
-		
-		return posts;
-	}
-
-	private async Task CreateFeedInCache(long userId, List<Post> posts)
-	{
+		posts = await _postRepository.GetFeed(userId, 0, _redisSettings.FeedCount, cancellationToken);
 		foreach (var post in posts)
 		{
-			var postJson = JsonConvert.SerializeObject(post);
-			await _redisCacheService.AddFeedAsync(userId, postJson, post.CreatedAt.Ticks);
+			await _redisCacheService.CreateFeedInCache(userId, post);
 		}
-	}
 	
-	private async Task UpdateFeedInCache(Post post, CancellationToken cancellationToken)
+		return posts;
+	}
+
+	private async Task AppendPostToSubscribers(Post post, CancellationToken cancellationToken)
 	{
 		var subscriberIds = await _userRepository.GetSubscriberIds(post.AuthorUserId, cancellationToken);
 		foreach (var subscriberId in subscriberIds)
 		{
-			var postJson = JsonConvert.SerializeObject(post);
-			await _redisCacheService.AddToFeedAsync(subscriberId, postJson, post.CreatedAt.Ticks);
+			await _redisCacheService.AppendPostToFeedInCache(subscriberId, post, post.CreatedAt.Ticks);
 		}
 	}
 }
