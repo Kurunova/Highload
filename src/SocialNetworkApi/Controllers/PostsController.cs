@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Models.Posts;
 using SocialNetwork.Domain.Services;
 using SocialNetworkApi.Hubs;
@@ -12,11 +13,13 @@ namespace SocialNetworkApi.Controllers;
 public class PostsController : BaseController
 {
     private readonly IPostService _postService;
+    private readonly IUserRepository _userRepository;
     private readonly IHubContext<PostFeedHub> _hubContext;
 
-    public PostsController(IPostService postService, IHubContext<PostFeedHub> hubContext)
+    public PostsController(IPostService postService, IUserRepository userRepository, IHubContext<PostFeedHub> hubContext)
     {
         _postService = postService;
+        _userRepository = userRepository;
         _hubContext = hubContext;
     }
 
@@ -26,10 +29,13 @@ public class PostsController : BaseController
     {
         var currentUserId = GetCurrentUserId();
         var createdPost = await _postService.CreatePost(currentUserId, post.Text, CancellationToken.None);
+
+        var subscribersId = await _userRepository.GetSubscriberIds(createdPost.AuthorUserId, CancellationToken.None);
+        IReadOnlyList<string> subscribersIdReadOnly = subscribersId.Select(p => $"user-{p}").ToList();
         
         // Отправка уведомления через WebSocket
         var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<PostFeedHub>>();
-        await hubContext.Clients.All.SendAsync("postFeedPosted", new
+        await hubContext.Clients.Groups(subscribersIdReadOnly).SendAsync("postFeedPosted", new
         {
             postId = createdPost.Id,
             postText = createdPost.Text,

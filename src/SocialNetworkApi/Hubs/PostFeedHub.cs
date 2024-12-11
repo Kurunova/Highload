@@ -14,15 +14,44 @@ public class PostFeedHub : Hub
 		_logger = logger;
 	}
 
-	public override Task OnConnectedAsync()
+	public override async Task OnConnectedAsync()
 	{
 		_logger.LogInformation($"Client connected: {Context.ConnectionId}");
-		return base.OnConnectedAsync();
+		
+		var userId = GetUserId(Context);
+		_logger.LogInformation($"{Context.ConnectionId} : userId : {userId}");
+		if (userId.HasValue)
+		{
+			await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{userId}");
+			_logger.LogInformation($"{Context.ConnectionId} : added to group userId : {userId}");
+		}
+		
+		await base.OnConnectedAsync();
 	}
 
-	public override Task OnDisconnectedAsync(Exception? exception)
+	private long? GetUserId(HubCallerContext context)
+	{
+		var userIdClaim = context.User?.Claims?.FirstOrDefault(c => c.Type == "userId");
+		if (context.User?.Identity?.IsAuthenticated == true 
+		    && userIdClaim != null && long.TryParse(userIdClaim.Value, out long userId))
+		{
+			return userId;
+		}
+
+		return null;
+	}
+
+	public override async Task OnDisconnectedAsync(Exception? exception)
 	{
 		_logger.LogInformation($"Client disconnected: {Context.ConnectionId}");
-		return base.OnDisconnectedAsync(exception);
+		
+		var userId = Context.UserIdentifier;
+		if (!string.IsNullOrEmpty(userId))
+		{
+			await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user-{userId}");
+			_logger.LogInformation($"{Context.ConnectionId} : removed from group userId : {userId}");
+		}
+		
+		await base.OnDisconnectedAsync(exception);
 	}
 }
