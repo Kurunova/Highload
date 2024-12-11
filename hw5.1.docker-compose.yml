@@ -1,0 +1,332 @@
+version: "3.9"
+
+volumes:
+  db-data-master-1:
+    name: socialnetwork-db-master-1
+  db-data-replica-1:
+    name: socialnetwork-db-replica-1
+  db-data-replica-2:
+    name: socialnetwork-db-replica-2
+  grafana-data:
+    name: socialnetwork-grafana-data
+  prometheus-data:
+    name: socialnetwork-prometheus-data
+  redis-data:
+    name: socialnetwork-redis-data
+  citus-coordinator-data-all:
+    name: citus-coordinator-data
+  citus-worker-1-data:
+    name: citus-worker-1-data
+  citus-worker-2-data:
+    name: citus-worker-2-data
+
+services:
+  socialnetwork-api-1:
+    build:
+      context: ./src
+      dockerfile: SocialNetworkApi/Dockerfile
+    container_name: socialnetwork-api-1
+    depends_on:
+      - socialnetwork-db-master
+    environment:
+      - HTTP_PORT=8080
+      - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DatabaseSettings__ReplicaConnectionStrings__0=Server=socialnetwork-db-replica-1;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DatabaseSettings__ReplicaConnectionStrings__1=Server=socialnetwork-db-replica-2;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DialogDbSettings__MasterConnectionString=Server=citus-coordinator;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
+      - Jwt__Issuer=socialnetwork.com
+      - Jwt__Audience=socialnetwork.com
+      - Cache__Enable=True
+      - Cache__RedisConnection=redis:6379
+      - Cache__TimeToLive=01:00:00
+      - Serilog__Using__0=Serilog.Sinks.Console
+      - Serilog__MinimumLevel=Debug
+      - Serilog__WriteTo__0__Name=Console
+    ports:
+      - "5001:8080"
+    networks:
+      - sn-network
+
+  socialnetwork-dbmigrator-1:
+    build:
+      context: ./src
+      dockerfile: SocialNetwork.DbMigrator/Dockerfile
+    container_name: socialnetwork-dbmigrator-1
+    depends_on:
+      - socialnetwork-db-master
+    environment:
+      - RUN_OPTIONS=migrateUp
+      - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - Serilog__Using__0=Serilog.Sinks.Console
+      - Serilog__MinimumLevel=Debug
+      - Serilog__WriteTo__0__Name=Console
+    ports:
+      - "5002:8080"
+    networks:
+      - sn-network
+
+  socialnetwork-db-master:
+    image: postgres:latest
+    container_name: socialnetwork-db-master
+    user: postgres  # Run the container as the postgres user
+    environment:
+      POSTGRES_DB: socialnetwork
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: "!QAZ2wsx"
+    volumes:
+      - db-data-master-1:/var/lib/postgresql/data
+      - ./replication-data:/master_backup
+      - ./docker-settings/hw3.master_setup.sh:/replication/hw3.master_setup.sh
+    ports:
+      - "5400:5432"
+    networks:
+      - sn-network
+
+  socialnetwork-db-replica-1:
+    # image: postgres:latest
+    build:
+      context: ./docker-settings
+      dockerfile: Dockerfile.PostgreSql.Replica
+    container_name: socialnetwork-db-replica-1
+    user: "postgres"
+    environment:
+      POSTGRES_DB: socialnetwork
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: "!QAZ2wsx"
+    volumes:
+      - db-data-replica-1:/var/lib/postgresql/data
+      #- ./replication-data:/master_backup
+    ports:
+      - "5401:5432"
+    networks:
+      - sn-network
+
+  socialnetwork-db-replica-2:
+    # image: postgres:latest
+    build:
+      context: ./docker-settings
+      dockerfile: Dockerfile.PostgreSql.Replica
+    container_name: socialnetwork-db-replica-2
+    user: "postgres"
+    environment:
+      POSTGRES_DB: socialnetwork
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: "!QAZ2wsx"
+    volumes:
+      - db-data-replica-2:/var/lib/postgresql/data
+      #- ./replication-data:/master_backup
+    ports:
+      - "5402:5432"
+    networks:
+      - sn-network
+
+  # sharding
+#  citus-membership-manager:
+#    image: citusdata/membership-manager:latest
+#    container_name: citus-membership-manager
+#    depends_on:
+#      - citus-coordinator
+#      - citus-worker-1
+#      - citus-worker-2
+#    environment:
+#      COORDINATOR_HOST: citus-coordinator
+#      COORDINATOR_PORT: 5432
+#      COORDINATOR_DATABASE: socialnetwork
+#      COORDINATOR_USERNAME: postgres_user
+#      COORDINATOR_PASSWORD: "!QAZ2wsx"
+#      WORKER_NODES: citus-worker-1:5432,citus-worker-2:5432
+#    networks:
+#      - sn-network
+  
+  citus-coordinator:
+    image: citusdata/citus:latest
+    container_name: citus-coordinator
+    environment:
+      POSTGRES_DB: socialnetwork
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: "!QAZ2wsx"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    command: [ "postgres", "-c", "wal_level=logical" ]
+    volumes:
+      - citus-coordinator-data-all:/var/lib/postgresql
+    ports:
+      - "5500:5432"
+    networks:
+      - sn-network
+    
+  citus-worker-1:
+    image: citusdata/citus:latest
+    container_name: citus-worker-1
+    environment:
+      POSTGRES_DB: socialnetwork
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: "!QAZ2wsx"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      CITUS_HOST: "citus-coordinator"
+    command: [ "postgres", "-c", "wal_level=logical" ]
+    volumes:
+      - citus-worker-1-data:/var/lib/postgresql/data
+    ports:
+      - "5501:5432"
+    networks:
+      - sn-network
+  
+  citus-worker-2:
+    image: citusdata/citus:latest
+    container_name: citus-worker-2
+    environment:
+      POSTGRES_DB: socialnetwork
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: "!QAZ2wsx"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      CITUS_HOST: "citus-coordinator"
+    command: [ "postgres", "-c", "wal_level=logical" ]
+    volumes:
+      - citus-worker-2-data:/var/lib/postgresql/data
+    ports:
+      - "5502:5432"
+    networks:
+      - sn-network
+
+#  membership-manager:
+#    image: citusdata/membership-manager
+#    container_name: membership-manager
+#    environment:
+#      COORDINATOR_HOST: citus-coordinator
+#      COORDINATOR_PORT: 5432
+#      COORDINATOR_DATABASE: socialnetwork
+#      COORDINATOR_USER: postgres_user
+#      COORDINATOR_PASSWORD: "!QAZ2wsx"
+#    depends_on:
+#      - citus-coordinator
+#      - citus-worker-1
+#      - citus-worker-2
+#    networks:
+#      - citus-network
+
+  # cache
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - sn-network
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      REDIS_HOSTS: "local:redis:6379"
+    depends_on:
+      - redis
+    networks:
+      - sn-network
+
+  # exporter for docker container metrics
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - sn-network
+
+  # exporter for db metrics
+  exporter-postgres-master:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: exporter-postgres-master
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres_user:!QAZ2wsx@socialnetwork-db-master:5432/socialnetwork?sslmode=disable"
+    ports:
+      - "9190:9187"
+    volumes:
+      - ./docker-settings/hw3.master_setup.sh:/docker-entrypoint-initdb.d/hw3.master_setup.sh
+      - ./docker-settings/postgres_exporter.yml:/postgres_exporter.yml
+    depends_on:
+      - socialnetwork-db-master
+    networks:
+      - sn-network
+
+  exporter-postgres-replica-1:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: exporter-postgres-replica-1
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres_user:!QAZ2wsx@socialnetwork-db-replica-1:5432/socialnetwork?sslmode=disable"
+    ports:
+      - "9191:9187"
+    volumes:
+      - ./docker-settings/postgres_exporter.yml:/postgres_exporter.yml
+    depends_on:
+      - socialnetwork-db-replica-1
+    networks:
+      - sn-network
+
+  exporter-postgres-replica-2:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: exporter-postgres-replica-2
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres_user:!QAZ2wsx@socialnetwork-db-replica-2:5432/socialnetwork?sslmode=disable"
+    ports:
+      - "9192:9187"
+    volumes:
+      - ./docker-settings/postgres_exporter.yml:/postgres_exporter.yml
+    depends_on:
+      - socialnetwork-db-replica-2
+    networks:
+      - sn-network
+  
+  # exporter for redis
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    ports:
+      - "9121:9121" 
+    environment:
+      REDIS_ADDR: "redis:6379"
+    depends_on:
+      - redis
+    networks:
+      - sn-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./docker-settings/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - cadvisor
+      - exporter-postgres-master
+    networks:
+      - sn-network
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=!QAZ2wsx
+    ports:
+      - "3000:3000"
+    networks:
+      - sn-network
+
+networks:
+  sn-network:
+    driver: bridge

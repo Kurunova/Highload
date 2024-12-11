@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Models;
 using SocialNetwork.Domain.Services;
@@ -9,7 +8,7 @@ namespace SocialNetworkApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UsersController : ControllerBase
+public class UsersController : BaseController
 {
 	private readonly IUserService _userService;
 	private readonly JwtTokenService _jwtTokenService;
@@ -73,17 +72,5 @@ public class UsersController : ControllerBase
 		var currentUserId = GetCurrentUserId();
 		await _userService.RemoveFriend(currentUserId, userId, CancellationToken.None);
 		return Ok(new { Message = "Friend removed successfully." });
-	}
-
-	private long GetCurrentUserId()
-	{
-		var userIdClaim = User.Claims?.FirstOrDefault(c => c.Type == "userId");
-		if (User.Identity?.IsAuthenticated == true 
-		    && userIdClaim != null && long.TryParse(userIdClaim.Value, out var userId))
-		{
-			return userId;
-		}
-        
-		throw new UnauthorizedAccessException("User is not authenticated.");
 	}
 }

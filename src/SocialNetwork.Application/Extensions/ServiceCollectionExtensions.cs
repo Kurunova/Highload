@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
 	{
 		serviceCollection.AddTransient<IUserService, UserService>();
 		serviceCollection.AddTransient<IPostService, PostService>();
+		serviceCollection.AddTransient<IDialogService, DialogService>();
 		serviceCollection.AddRedis(configuration);
 		return serviceCollection;
 	}

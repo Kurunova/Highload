@@ -1,0 +1,7 @@
+FROM citusdata/citus:latest
+
+# Копируем настройки pg_hba.conf
+COPY citus-worker/pg_hba.conf /var/lib/postgresql/data/pg_hba.conf
+
+# Открываем порт PostgreSQL
+EXPOSE 5432
