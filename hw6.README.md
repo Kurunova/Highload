@@ -6,7 +6,7 @@
 Вставьте следующий код:
 
 ```javascript
-const socket = new WebSocket('ws://localhost:7015/post/feed/posted?access_token=your_jwt_token');
+const socket = new WebSocket("ws://localhost:7015/post/feed/posted?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMDA1MjU3IiwiZ2l2ZW5fbmFtZSI6IkVsZW5hIiwiZmFtaWx5X25hbWUiOiJGIiwiYmlydGhkYXRlIjoiMTk5MC0xMi0wOCIsImNpdHkiOiJCa2siLCJob2JiaWVzIjoibm8iLCJleHAiOjE3MzM5MjI4MzgsImlzcyI6InNvY2lhbG5ldHdvcmsuY29tIiwiYXVkIjoic29jaWFsbmV0d29yay5jb20ifQ.kx7SaTrKUN1zmak64mAq-Wv2dXzAKvp4uhN2KVRc2hg");
 
 socket.onopen = function(event) {
     console.log("WebSocket connection opened:", event);
@@ -23,6 +23,18 @@ socket.onerror = function(error) {
 
 socket.onclose = function(event) {
     console.log("WebSocket connection closed:", event);
+};
+```
+
+```
+const socket = new WebSocket("ws://localhost:7015/post/feed/posted?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMDA1MjU3IiwiZ2l2ZW5fbmFtZSI6IkVsZW5hIiwiZmFtaWx5X25hbWUiOiJGIiwiYmlydGhkYXRlIjoiMTk5MC0xMi0wOCIsImNpdHkiOiJCa2siLCJob2JiaWVzIjoibm8iLCJleHAiOjE3MzM5MjI4MzgsImlzcyI6InNvY2lhbG5ldHdvcmsuY29tIiwiYXVkIjoic29jaWFsbmV0d29yay5jb20ifQ.kx7SaTrKUN1zmak64mAq-Wv2dXzAKvp4uhN2KVRc2hg");
+
+socket.onopen = () => {
+    console.log("Connected");
+};
+
+socket.onmessage = (event) => {
+    console.log("Message from server:", event.data);
 };
 ```
 
