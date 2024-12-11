@@ -26,7 +26,7 @@ public class PostService : IPostService
 		_redisSettings = redisSettings.Value;
 	}
 	
-	public async Task<long> CreatePost(long userId, string text, CancellationToken cancellationToken)
+	public async Task<Post> CreatePost(long userId, string text, CancellationToken cancellationToken)
 	{
 		if (string.IsNullOrWhiteSpace(text))
 			throw new ValidationException("Post text cannot be empty.");
@@ -36,7 +36,7 @@ public class PostService : IPostService
 		if(_redisSettings.Enable)
 			await AppendPostToSubscribers(post, cancellationToken);
 
-		return post.Id;
+		return post;
 	}
 
 	public async Task UpdatePost(long userId, long postId, string text, CancellationToken cancellationToken)

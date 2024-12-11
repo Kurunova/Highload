@@ -44,6 +44,24 @@ public static class ServiceCollectionExtensions
 					ValidAudience = jwtSettings.Audience,
 					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
 				};
+				
+				// Добавление обработчика для извлечения токена из строки запроса
+				options.Events = new JwtBearerEvents
+				{
+					OnMessageReceived = context =>
+					{
+						// Попытка получить токен из строки запроса
+						var accessToken = context.Request.Query["access_token"];
+                    
+						// Если токен передан, устанавливаем его в контекст
+						if (!string.IsNullOrEmpty(accessToken))
+						{
+							context.Token = accessToken;
+						}
+
+						return Task.CompletedTask;
+					}
+				};
 			});
 		return serviceCollection;
 	}

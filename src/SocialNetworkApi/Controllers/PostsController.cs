@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using SocialNetwork.Domain.Models.Posts;
 using SocialNetwork.Domain.Services;
+using SocialNetworkApi.Hubs;
 
 namespace SocialNetworkApi.Controllers;
 
@@ -10,10 +12,12 @@ namespace SocialNetworkApi.Controllers;
 public class PostsController : BaseController
 {
     private readonly IPostService _postService;
+    private readonly IHubContext<PostFeedHub> _hubContext;
 
-    public PostsController(IPostService postService)
+    public PostsController(IPostService postService, IHubContext<PostFeedHub> hubContext)
     {
         _postService = postService;
+        _hubContext = hubContext;
     }
 
     [Authorize]
@@ -21,8 +25,18 @@ public class PostsController : BaseController
     public async Task<IActionResult> CreatePost([FromBody] CreatePostModel post)
     {
         var currentUserId = GetCurrentUserId();
-        var postId = await _postService.CreatePost(currentUserId, post.Text, CancellationToken.None);
-        return Ok(new { PostId = postId });
+        var createdPost = await _postService.CreatePost(currentUserId, post.Text, CancellationToken.None);
+        
+        // Отправка уведомления через WebSocket
+        var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<PostFeedHub>>();
+        await hubContext.Clients.All.SendAsync("postFeedPosted", new
+        {
+            postId = createdPost.Id,
+            postText = createdPost.Text,
+            authorUserId = createdPost.AuthorUserId
+        });
+        
+        return Ok(new { PostId = createdPost.Id });
     }
 
     [Authorize]
