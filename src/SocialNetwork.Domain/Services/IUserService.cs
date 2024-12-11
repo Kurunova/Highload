@@ -8,4 +8,6 @@ public interface IUserService
 	Task<UserInfo> GetById(long id, CancellationToken cancellationToken);
 	Task<UserInfo> Login(LoginUser user, CancellationToken cancellationToken);
 	Task<UserInfo[]> Search(SearchUser searchUser, CancellationToken cancellationToken);
+	Task AddFriend(long userId, long friendId, CancellationToken cancellationToken);
+	Task RemoveFriend(long userId, long friendId, CancellationToken cancellationToken);
 }

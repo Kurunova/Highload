@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Models;
 using SocialNetwork.Domain.Services;
@@ -54,5 +55,35 @@ public class UsersController : ControllerBase
 			return Ok("No users found matching the criteria.");
 
 		return Ok(users);
+	}
+	
+	[Authorize]
+	[HttpPut("friend/set/{userId}")]
+	public async Task<IActionResult> AddFriend(long userId)
+	{
+		var currentUserId = GetCurrentUserId();
+		await _userService.AddFriend(currentUserId, userId, CancellationToken.None);
+		return Ok(new { Message = "Friend added successfully." });
+	}
+
+	[Authorize]
+	[HttpPut("friend/delete/{userId}")]
+	public async Task<IActionResult> RemoveFriend(long userId)
+	{
+		var currentUserId = GetCurrentUserId();
+		await _userService.RemoveFriend(currentUserId, userId, CancellationToken.None);
+		return Ok(new { Message = "Friend removed successfully." });
+	}
+
+	private long GetCurrentUserId()
+	{
+		var userIdClaim = User.Claims?.FirstOrDefault(c => c.Type == "userId");
+		if (User.Identity?.IsAuthenticated == true 
+		    && userIdClaim != null && long.TryParse(userIdClaim.Value, out var userId))
+		{
+			return userId;
+		}
+        
+		throw new UnauthorizedAccessException("User is not authenticated.");
 	}
 }
