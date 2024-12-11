@@ -17,6 +17,7 @@ public sealed class Startup
 	{
 		Log.Logger = new LoggerConfiguration()
 			.ReadFrom.Configuration(configuration)
+			.WriteTo.Console()
 			.CreateLogger();
 
 		_configuration = configuration;
@@ -66,6 +67,7 @@ public sealed class Startup
 	public void Configure(IApplicationBuilder applicationBuilder)
 	{
 		applicationBuilder.UseMiddleware<ExceptionMiddleware>();
+		applicationBuilder.UseWebSockets();
 		applicationBuilder.UseRouting();
 		applicationBuilder.UseHttpsRedirection();
 		
@@ -77,8 +79,8 @@ public sealed class Startup
 		
 		applicationBuilder.UseEndpoints(endpointRouteBuilder =>
 		{
-			endpointRouteBuilder.MapHub<PostFeedHub>("/post/feed/posted"); // Маршрут для WebSocket
 			endpointRouteBuilder.MapControllers();
+			endpointRouteBuilder.MapHub<PostFeedHub>("/post/feed/posted"); // Маршрут для WebSocket
 		});
 	}
 }

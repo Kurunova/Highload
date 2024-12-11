@@ -60,6 +60,11 @@ public static class ServiceCollectionExtensions
 						}
 
 						return Task.CompletedTask;
+					},
+					OnAuthenticationFailed = context =>
+					{
+						Console.WriteLine($"JWT authentication failed: {context.Exception.Message}");
+						return Task.CompletedTask;
 					}
 				};
 			});
