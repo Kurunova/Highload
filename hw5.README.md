@@ -66,7 +66,7 @@ from dialog_messages
 limit 1000;
 
 explain SELECT *
-FROM citus.dialog_messages
+FROM dialog_messages
 WHERE dialog_id = '1000_1005257'
 ORDER BY sent_at;
 
