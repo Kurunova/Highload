@@ -3,6 +3,7 @@ using Serilog;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
 using SocialNetwork.Dialog.DataAccess.Extensions;
+using SocialNetworkApi.BackgroundServices;
 using SocialNetworkApi.Extensions;
 using SocialNetworkApi.Hubs;
 using SocialNetworkApi.Middlewares;
@@ -30,6 +31,8 @@ public sealed class Startup
 		serviceCollection.AddApplication(_configuration);
 		serviceCollection.AddJwt(_configuration);
 		serviceCollection.AddWebSockets(_configuration);
+		
+		serviceCollection.AddHostedService<PostFeedConsumer>();
 		
 		serviceCollection.AddControllers();
 		serviceCollection.AddEndpointsApiExplorer();

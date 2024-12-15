@@ -18,6 +18,17 @@ public class PostFeedWebSocketService
 		_hubContext = hubContext;
 	}
 	
+	public async Task SendPostToGroup(long userId, Post post)
+	{
+		var groupName = string.Format(_groupNameFormat, userId);
+		await _hubContext.Clients.Groups(groupName).SendAsync("postFeedPosted", new
+		{
+			postId = post.Id,
+			postText = post.Text,
+			authorUserId = post.AuthorUserId
+		});
+	}
+	
 	public async Task SendPostToGroup(List<long> subscribersId, Post post)
 	{
 		IReadOnlyList<string> subscribersIdReadOnly = subscribersId.Select(p => string.Format(_groupNameFormat, p)).ToList();

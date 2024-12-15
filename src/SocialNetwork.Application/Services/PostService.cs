@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SocialNetwork.Application.Configurations;
+using SocialNetwork.Application.Models;
 using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Services;
@@ -13,17 +16,20 @@ public class PostService : IPostService
 	private readonly IUserRepository _userRepository;
 	private readonly RedisCacheService _redisCacheService;
 	private readonly RedisSettings _redisSettings;
+	private readonly RabbitMqService _rabbitMqService;
 
 	public PostService(
 		IPostRepository postRepository, 
 		IUserRepository userRepository, 
 		RedisCacheService redisCacheService,
-		IOptions<RedisSettings> redisSettings)
+		IOptions<RedisSettings> redisSettings, 
+		RabbitMqService rabbitMqService)
 	{
 		_postRepository = postRepository;
 		_userRepository = userRepository;
 		_redisCacheService = redisCacheService;
 		_redisSettings = redisSettings.Value;
+		_rabbitMqService = rabbitMqService;
 	}
 	
 	public async Task<Post> CreatePost(long userId, string text, CancellationToken cancellationToken)
@@ -33,6 +39,13 @@ public class PostService : IPostService
 
 		var post = await _postRepository.CreatePost(userId, text, cancellationToken);
 		
+		var subscribersId = await _userRepository.GetSubscriberIds(post.AuthorUserId, CancellationToken.None);
+		foreach (var subscriberId in subscribersId)
+		{
+			var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(post));
+			await _rabbitMqService.PublishPostEvent(subscriberId.ToString(), body, cancellationToken);
+		}
+
 		if(_redisSettings.Enable)
 			await AppendPostToSubscribers(post, cancellationToken);
 

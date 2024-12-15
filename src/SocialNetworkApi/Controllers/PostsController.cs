@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Models.Posts;
 using SocialNetwork.Domain.Services;
-using SocialNetworkApi.Hubs;
 using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Controllers;
@@ -14,18 +11,10 @@ namespace SocialNetworkApi.Controllers;
 public class PostsController : BaseController
 {
     private readonly IPostService _postService;
-    private readonly IUserRepository _userRepository;
-    private readonly PostFeedWebSocketService _webSocketService;
 
-    public PostsController(
-        JwtTokenService jwtTokenService, 
-        IPostService postService, 
-        IUserRepository userRepository, 
-        PostFeedWebSocketService webSocketService) : base(jwtTokenService)
+    public PostsController(JwtTokenService jwtTokenService, IPostService postService) : base(jwtTokenService)
     {
         _postService = postService;
-        _userRepository = userRepository;
-        _webSocketService = webSocketService;
     }
 
     [Authorize]
@@ -34,10 +23,10 @@ public class PostsController : BaseController
     {
         var currentUserId = GetCurrentUserId();
         var createdPost = await _postService.CreatePost(currentUserId, post.Text, CancellationToken.None);
-
+        
         // Отправка уведомления через WebSocket
-        var subscribersId = await _userRepository.GetSubscriberIds(createdPost.AuthorUserId, CancellationToken.None);
-        await _webSocketService.SendPostToGroup(subscribersId, createdPost);
+        // var subscribersId = await _userRepository.GetSubscriberIds(createdPost.AuthorUserId, CancellationToken.None);
+        // await _webSocketService.SendPostToGroup(subscribersId, createdPost);
         
         return Ok(new { PostId = createdPost.Id });
     }
