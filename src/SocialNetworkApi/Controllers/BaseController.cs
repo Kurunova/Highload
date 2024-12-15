@@ -1,18 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Controllers;
 
 public class BaseController : ControllerBase
 {
+	private readonly JwtTokenService _jwtTokenService;
+
+	public BaseController(JwtTokenService jwtTokenService)
+	{
+		_jwtTokenService = jwtTokenService;
+	}
+
 	protected long GetCurrentUserId()
 	{
-		var userIdClaim = User.Claims?.FirstOrDefault(c => c.Type == "userId");
-		if (User.Identity?.IsAuthenticated == true 
-		    && userIdClaim != null && long.TryParse(userIdClaim.Value, out var userId))
-		{
-			return userId;
-		}
-        
-		throw new UnauthorizedAccessException("User is not authenticated.");
+		var userId = _jwtTokenService.GetCurrentUserId(User) 
+		    ?? throw new UnauthorizedAccessException("User is not authenticated.");
+
+		return userId;
 	}
 }

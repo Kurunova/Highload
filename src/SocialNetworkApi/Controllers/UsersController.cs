@@ -10,13 +10,13 @@ namespace SocialNetworkApi.Controllers;
 [Route("[controller]")]
 public class UsersController : BaseController
 {
-	private readonly IUserService _userService;
 	private readonly JwtTokenService _jwtTokenService;
+	private readonly IUserService _userService;
 	
-	public UsersController(IUserService userService, JwtTokenService jwtTokenService)
+	public UsersController(JwtTokenService jwtTokenService, IUserService userService) : base(jwtTokenService)
 	{
-		_userService = userService;
 		_jwtTokenService = jwtTokenService;
+		_userService = userService;
 	}
 
 	[HttpPost("register")]

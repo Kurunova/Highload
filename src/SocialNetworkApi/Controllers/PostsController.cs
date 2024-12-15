@@ -5,6 +5,7 @@ using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Models.Posts;
 using SocialNetwork.Domain.Services;
 using SocialNetworkApi.Hubs;
+using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Controllers;
 
@@ -14,13 +15,17 @@ public class PostsController : BaseController
 {
     private readonly IPostService _postService;
     private readonly IUserRepository _userRepository;
-    private readonly IHubContext<PostFeedHub> _hubContext;
+    private readonly PostFeedWebSocketService _webSocketService;
 
-    public PostsController(IPostService postService, IUserRepository userRepository, IHubContext<PostFeedHub> hubContext)
+    public PostsController(
+        JwtTokenService jwtTokenService, 
+        IPostService postService, 
+        IUserRepository userRepository, 
+        PostFeedWebSocketService webSocketService) : base(jwtTokenService)
     {
         _postService = postService;
         _userRepository = userRepository;
-        _hubContext = hubContext;
+        _webSocketService = webSocketService;
     }
 
     [Authorize]
@@ -30,17 +35,9 @@ public class PostsController : BaseController
         var currentUserId = GetCurrentUserId();
         var createdPost = await _postService.CreatePost(currentUserId, post.Text, CancellationToken.None);
 
-        var subscribersId = await _userRepository.GetSubscriberIds(createdPost.AuthorUserId, CancellationToken.None);
-        IReadOnlyList<string> subscribersIdReadOnly = subscribersId.Select(p => $"user-{p}").ToList();
-        
         // Отправка уведомления через WebSocket
-        var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<PostFeedHub>>();
-        await hubContext.Clients.Groups(subscribersIdReadOnly).SendAsync("postFeedPosted", new
-        {
-            postId = createdPost.Id,
-            postText = createdPost.Text,
-            authorUserId = createdPost.AuthorUserId
-        });
+        var subscribersId = await _userRepository.GetSubscriberIds(createdPost.AuthorUserId, CancellationToken.None);
+        await _webSocketService.SendPostToGroup(subscribersId, createdPost);
         
         return Ok(new { PostId = createdPost.Id });
     }

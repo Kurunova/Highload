@@ -29,10 +29,10 @@ public sealed class Startup
 		serviceCollection.AddDialogDatabase(_configuration);
 		serviceCollection.AddApplication(_configuration);
 		serviceCollection.AddJwt(_configuration);
-
+		serviceCollection.AddWebSockets(_configuration);
+		
 		serviceCollection.AddControllers();
 		serviceCollection.AddEndpointsApiExplorer();
-		serviceCollection.AddSignalR(); // Добавляем SignalR
 		serviceCollection.AddSwaggerGen(c =>
 		{
 			c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });

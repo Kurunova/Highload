@@ -2,12 +2,20 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SocialNetworkApi.Configurations;
+using SocialNetworkApi.Hubs;
 using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+	public static IServiceCollection AddWebSockets(this IServiceCollection serviceCollection, IConfiguration configuration)
+	{
+		serviceCollection.AddSignalR(); // Добавляем SignalR
+		serviceCollection.AddTransient<PostFeedWebSocketService>();
+		return serviceCollection;
+	}
+	
 	public static IServiceCollection AddJwt(this IServiceCollection serviceCollection, IConfiguration configuration)
 	{
 		serviceCollection.AddTransient<JwtTokenService>();

@@ -44,4 +44,16 @@ public class JwtTokenService
 		var result = jwtSecurityTokenHandler.WriteToken(token);
 		return result;
 	}
+	
+	public long? GetCurrentUserId(ClaimsPrincipal? user)
+	{
+		var userIdClaim = user?.Claims?.FirstOrDefault(c => c.Type == "userId");
+		if (user?.Identity?.IsAuthenticated == true 
+		    && userIdClaim != null && long.TryParse(userIdClaim.Value, out var userId))
+		{
+			return userId;
+		}
+        
+		return null;
+	}
 }
