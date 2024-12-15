@@ -3,7 +3,6 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SocialNetwork.Application.Configurations;
-using SocialNetwork.Application.Models;
 using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Services;
