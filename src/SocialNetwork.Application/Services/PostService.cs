@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SocialNetwork.Application.Configurations;
+using SocialNetwork.Application.Models;
 using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Entities;
 using SocialNetwork.Domain.Services;
@@ -13,20 +14,20 @@ public class PostService : IPostService
 {
 	private readonly IPostRepository _postRepository;
 	private readonly IUserRepository _userRepository;
-	private readonly RedisCacheService _redisCacheService;
+	private readonly PostCacheService _postCacheService;
 	private readonly RedisSettings _redisSettings;
 	private readonly RabbitMqService _rabbitMqService;
 
 	public PostService(
 		IPostRepository postRepository, 
 		IUserRepository userRepository, 
-		RedisCacheService redisCacheService,
+		PostCacheService postCacheService,
 		IOptions<RedisSettings> redisSettings, 
 		RabbitMqService rabbitMqService)
 	{
 		_postRepository = postRepository;
 		_userRepository = userRepository;
-		_redisCacheService = redisCacheService;
+		_postCacheService = postCacheService;
 		_redisSettings = redisSettings.Value;
 		_rabbitMqService = rabbitMqService;
 	}
@@ -37,17 +38,15 @@ public class PostService : IPostService
 			throw new ValidationException("Post text cannot be empty.");
 
 		var post = await _postRepository.CreatePost(userId, text, cancellationToken);
-		
-		var subscribersId = await _userRepository.GetSubscriberIds(post.AuthorUserId, CancellationToken.None);
-		foreach (var subscriberId in subscribersId)
+
+		var postFeedMessage = new PostFeedMessage
 		{
-			var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(post));
-			await _rabbitMqService.PublishPostEvent(subscriberId.ToString(), body, cancellationToken);
-		}
-
-		if(_redisSettings.Enable)
-			await AppendPostToSubscribers(post, cancellationToken);
-
+			Operation = PostFeedOperation.Created,
+			Post = post
+		};
+		var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(postFeedMessage));
+		await _rabbitMqService.PublishPostEvent(userId.ToString(), body, cancellationToken);
+		
 		return post;
 	}
 
@@ -57,17 +56,27 @@ public class PostService : IPostService
 			throw new ValidationException("Post text cannot be empty.");
 
 		var post = await _postRepository.UpdatePost(userId, postId, text, cancellationToken);;
-		
-		if (_redisSettings.Enable)
-			await _redisCacheService.UpdateFeedInCache(userId, post);
+
+		var postFeedMessage = new PostFeedMessage
+		{
+			Operation = PostFeedOperation.Updated,
+			Post = post
+		};
+		var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(postFeedMessage));
+		await _rabbitMqService.PublishPostEvent(userId.ToString(), body, cancellationToken);
 	}
 
 	public async Task DeletePost(long userId, long postId, CancellationToken cancellationToken)
 	{
 		await _postRepository.DeletePost(userId, postId, cancellationToken);
 		
-		if (_redisSettings.Enable)
-			await _redisCacheService.RemovePostFromFeedInCache(userId, postId);
+		var postFeedMessage = new PostFeedMessage
+		{
+			Operation = PostFeedOperation.Deleted,
+			Post = new Post { Id = postId }
+		};
+		var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(postFeedMessage));
+		await _rabbitMqService.PublishPostEvent(userId.ToString(), body, cancellationToken);
 	}
 
 	public async Task<Post> GetPostById(long postId, CancellationToken cancellationToken)
@@ -80,25 +89,16 @@ public class PostService : IPostService
 		if(!_redisSettings.Enable)
 			return await _postRepository.GetFeed(userId, offset, limit, cancellationToken);
 		
-		var posts = await _redisCacheService.GetFeedFromCache(userId);
+		var posts = await _postCacheService.GetFeedFromCache(userId);
 		if (posts != null)
 			return posts;
 		
 		posts = await _postRepository.GetFeed(userId, 0, _redisSettings.FeedCount, cancellationToken);
 		foreach (var post in posts)
 		{
-			await _redisCacheService.CreateFeedInCache(userId, post);
+			await _postCacheService.CreateFeedInCache(userId, post);
 		}
 	
 		return posts;
-	}
-
-	private async Task AppendPostToSubscribers(Post post, CancellationToken cancellationToken)
-	{
-		var subscriberIds = await _userRepository.GetSubscriberIds(post.AuthorUserId, cancellationToken);
-		foreach (var subscriberId in subscriberIds)
-		{
-			await _redisCacheService.AppendPostToFeedInCache(subscriberId, post, post.CreatedAt.Ticks);
-		}
 	}
 }

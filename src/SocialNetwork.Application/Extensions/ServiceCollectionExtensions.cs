@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
 		serviceCollection.Configure<RedisSettings>(redisSettingsSection);
 		
 		serviceCollection.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisSettings.RedisConnection));
-		serviceCollection.AddTransient<RedisCacheService>();
+		serviceCollection.AddTransient<PostCacheService>();
 		return serviceCollection;
 	}
 	

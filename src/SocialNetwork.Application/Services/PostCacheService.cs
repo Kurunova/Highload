@@ -6,12 +6,12 @@ using StackExchange.Redis;
 
 namespace SocialNetwork.Application.Services;
 
-public class RedisCacheService
+public class PostCacheService
 {
 	private readonly IDatabase _cache;
 	private readonly RedisSettings _redisSettings;
 
-	public RedisCacheService(IConnectionMultiplexer redis, IOptions<RedisSettings> redisSettings)
+	public PostCacheService(IConnectionMultiplexer redis, IOptions<RedisSettings> redisSettings)
 	{
 		_cache = redis.GetDatabase();
 		_redisSettings = redisSettings.Value;
@@ -42,6 +42,7 @@ public class RedisCacheService
 		return posts;
 	}
 	
+	
 	public async Task CreateFeedInCache(long userId, Post post)
 	{
 		var key = $"feed:{userId}";
@@ -55,6 +56,9 @@ public class RedisCacheService
 	
 	public async Task AppendPostToFeedInCache(long userId, Post post, long createdAt)
 	{
+		if(!_redisSettings.Enable)
+			return;
+		
 		var postJson = JsonConvert.SerializeObject(post);
 		
 		var key = $"feed:{userId}";
@@ -68,6 +72,9 @@ public class RedisCacheService
 	
 	public async Task UpdateFeedInCache(long userId, Post post)
 	{
+		if(!_redisSettings.Enable)
+			return;
+		
 		await RemovePostFromFeedInCache(userId, post.Id);
 		
 		var key = $"feed:{userId}";
@@ -77,6 +84,9 @@ public class RedisCacheService
 
 	public async Task RemovePostFromFeedInCache(long userId, long postId)
 	{
+		if(!_redisSettings.Enable)
+			return;
+		
 		var key = $"feed:{userId}";
 		
 		var existingPosts = await _cache.SortedSetRangeByScoreAsync(key);
