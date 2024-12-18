@@ -15,10 +15,11 @@ public static class ServiceCollectionExtensions
 		serviceCollection.AddTransient<IPostService, PostService>();
 		serviceCollection.AddTransient<IDialogService, DialogService>();
 		serviceCollection.AddRedis(configuration);
+		serviceCollection.AddRabbitMq(configuration);
 		return serviceCollection;
 	}
-	
-	public static IServiceCollection AddRedis(this IServiceCollection serviceCollection, IConfiguration configuration)
+
+	private static IServiceCollection AddRedis(this IServiceCollection serviceCollection, IConfiguration configuration)
 	{
 		var redisSettingsSection = configuration.GetSection("Cache");
 		if (redisSettingsSection == null)
@@ -31,7 +32,23 @@ public static class ServiceCollectionExtensions
 		serviceCollection.Configure<RedisSettings>(redisSettingsSection);
 		
 		serviceCollection.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisSettings.RedisConnection));
-		serviceCollection.AddTransient<RedisCacheService>();
+		serviceCollection.AddTransient<PostCacheService>();
+		return serviceCollection;
+	}
+	
+	private static IServiceCollection AddRabbitMq(this IServiceCollection serviceCollection, IConfiguration configuration)
+	{
+		var rabbitMqSettingsSection = configuration.GetSection("RabbitMQ");
+		if (rabbitMqSettingsSection == null)
+			throw new InvalidOperationException("RabbitMQ settings section is missing in the configuration.");
+		
+		var rabbitMqSettings = rabbitMqSettingsSection.Get<RabbitMqSettings>();
+		if (rabbitMqSettings == null)
+			throw new InvalidOperationException("RabbitMQ settings cannot be loaded from the section.");
+		
+		serviceCollection.Configure<RabbitMqSettings>(rabbitMqSettingsSection);
+		
+		serviceCollection.AddTransient<RabbitMqService>();
 		return serviceCollection;
 	}
 }

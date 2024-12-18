@@ -2,12 +2,20 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SocialNetworkApi.Configurations;
+using SocialNetworkApi.Hubs;
 using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+	public static IServiceCollection AddWebSockets(this IServiceCollection serviceCollection, IConfiguration configuration)
+	{
+		serviceCollection.AddSignalR(); // Добавляем SignalR
+		serviceCollection.AddTransient<PostFeedWebSocketService>();
+		return serviceCollection;
+	}
+	
 	public static IServiceCollection AddJwt(this IServiceCollection serviceCollection, IConfiguration configuration)
 	{
 		serviceCollection.AddTransient<JwtTokenService>();
@@ -43,6 +51,29 @@ public static class ServiceCollectionExtensions
 					ValidIssuer = jwtSettings.Issuer,
 					ValidAudience = jwtSettings.Audience,
 					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+				};
+				
+				// Добавление обработчика для извлечения токена из строки запроса
+				options.Events = new JwtBearerEvents
+				{
+					OnMessageReceived = context =>
+					{
+						// Попытка получить токен из строки запроса
+						var accessToken = context.Request.Query["access_token"];
+                    
+						// Если токен передан, устанавливаем его в контекст
+						if (!string.IsNullOrEmpty(accessToken))
+						{
+							context.Token = accessToken;
+						}
+
+						return Task.CompletedTask;
+					},
+					OnAuthenticationFailed = context =>
+					{
+						Console.WriteLine($"JWT authentication failed: {context.Exception.Message}");
+						return Task.CompletedTask;
+					}
 				};
 			});
 		return serviceCollection;

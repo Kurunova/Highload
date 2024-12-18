@@ -3,7 +3,9 @@ using Serilog;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
 using SocialNetwork.Dialog.DataAccess.Extensions;
+using SocialNetworkApi.BackgroundServices;
 using SocialNetworkApi.Extensions;
+using SocialNetworkApi.Hubs;
 using SocialNetworkApi.Middlewares;
 
 namespace SocialNetworkApi;
@@ -16,6 +18,7 @@ public sealed class Startup
 	{
 		Log.Logger = new LoggerConfiguration()
 			.ReadFrom.Configuration(configuration)
+			.WriteTo.Console()
 			.CreateLogger();
 
 		_configuration = configuration;
@@ -27,7 +30,10 @@ public sealed class Startup
 		serviceCollection.AddDialogDatabase(_configuration);
 		serviceCollection.AddApplication(_configuration);
 		serviceCollection.AddJwt(_configuration);
-
+		serviceCollection.AddWebSockets(_configuration);
+		
+		serviceCollection.AddHostedService<PostFeedConsumer>();
+		
 		serviceCollection.AddControllers();
 		serviceCollection.AddEndpointsApiExplorer();
 		serviceCollection.AddSwaggerGen(c =>
@@ -64,6 +70,7 @@ public sealed class Startup
 	public void Configure(IApplicationBuilder applicationBuilder)
 	{
 		applicationBuilder.UseMiddleware<ExceptionMiddleware>();
+		applicationBuilder.UseWebSockets();
 		applicationBuilder.UseRouting();
 		applicationBuilder.UseHttpsRedirection();
 		
@@ -76,6 +83,7 @@ public sealed class Startup
 		applicationBuilder.UseEndpoints(endpointRouteBuilder =>
 		{
 			endpointRouteBuilder.MapControllers();
+			endpointRouteBuilder.MapHub<PostFeedHub>("/post/feed/posted"); // Маршрут для WebSocket
 		});
 	}
 }

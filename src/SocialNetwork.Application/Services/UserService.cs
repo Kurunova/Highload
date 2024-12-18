@@ -55,6 +55,8 @@ public class UserService : IUserService
 			throw new ValidationException($"Invalid input data");
 		
 		var user = await _userRepository.GetByLogin(loginUser.Login, cancellationToken);
+		if (user == null)
+			return null;
 		
 		string passwordHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
 			password: loginUser.Password,

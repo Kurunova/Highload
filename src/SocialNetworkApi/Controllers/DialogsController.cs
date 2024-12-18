@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Models.Dialogs;
 using SocialNetwork.Domain.Services;
+using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Controllers;
 
@@ -12,7 +13,7 @@ public class DialogsController : BaseController
 {
 	private readonly IDialogService _dialogService;
 
-	public DialogsController(IDialogService dialogService)
+	public DialogsController(JwtTokenService jwtTokenService, IDialogService dialogService) : base(jwtTokenService)
 	{
 		_dialogService = dialogService;
 	}

@@ -18,7 +18,13 @@
         "Jwt__Audience": "socialnetwork.com",
         "Cache__Enable": "True",
         "Cache__RedisConnection": "localhost:6379",
-        "Cache__TimeToLive": "01:00:00"
+        "Cache__TimeToLive": "01:00:00",
+        "RabbitMQ__HostName": "localhost",
+        "RabbitMQ__UserName": "guest",
+        "RabbitMQ__Password": "guest",
+        "RabbitMQ__Exchange": "PostFeedExchange",
+        "RabbitMQ__Queue": "PostFeedQueue",
+        "RabbitMQ__RoutingKeyPrefix": "feed.user."
       }
     },
     "SocialNetworkApi.DbMigrator": {

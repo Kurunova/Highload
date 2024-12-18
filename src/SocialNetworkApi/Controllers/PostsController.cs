@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SocialNetwork.Domain.Models.Posts;
 using SocialNetwork.Domain.Services;
+using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Controllers;
 
@@ -11,7 +12,7 @@ public class PostsController : BaseController
 {
     private readonly IPostService _postService;
 
-    public PostsController(IPostService postService)
+    public PostsController(JwtTokenService jwtTokenService, IPostService postService) : base(jwtTokenService)
     {
         _postService = postService;
     }
@@ -21,8 +22,13 @@ public class PostsController : BaseController
     public async Task<IActionResult> CreatePost([FromBody] CreatePostModel post)
     {
         var currentUserId = GetCurrentUserId();
-        var postId = await _postService.CreatePost(currentUserId, post.Text, CancellationToken.None);
-        return Ok(new { PostId = postId });
+        var createdPost = await _postService.CreatePost(currentUserId, post.Text, CancellationToken.None);
+        
+        // Отправка уведомления через WebSocket
+        // var subscribersId = await _userRepository.GetSubscriberIds(createdPost.AuthorUserId, CancellationToken.None);
+        // await _webSocketService.SendPostToGroup(subscribersId, createdPost);
+        
+        return Ok(new { PostId = createdPost.Id });
     }
 
     [Authorize]
