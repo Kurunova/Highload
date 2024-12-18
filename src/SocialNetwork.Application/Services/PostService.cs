@@ -13,20 +13,17 @@ namespace SocialNetwork.Application.Services;
 public class PostService : IPostService
 {
 	private readonly IPostRepository _postRepository;
-	private readonly IUserRepository _userRepository;
 	private readonly PostCacheService _postCacheService;
 	private readonly RedisSettings _redisSettings;
 	private readonly RabbitMqService _rabbitMqService;
 
 	public PostService(
 		IPostRepository postRepository, 
-		IUserRepository userRepository, 
 		PostCacheService postCacheService,
 		IOptions<RedisSettings> redisSettings, 
 		RabbitMqService rabbitMqService)
 	{
 		_postRepository = postRepository;
-		_userRepository = userRepository;
 		_postCacheService = postCacheService;
 		_redisSettings = redisSettings.Value;
 		_rabbitMqService = rabbitMqService;
