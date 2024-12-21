@@ -7,6 +7,7 @@ LoadTesting/apache-jmeter-5.6.3/printable_docs/
 LoadTesting/apache-jmeter-5.6.3/licenses/
 
 replication-data/
+docker-settings/volumes/
 
 # User-specific files
 *.suo

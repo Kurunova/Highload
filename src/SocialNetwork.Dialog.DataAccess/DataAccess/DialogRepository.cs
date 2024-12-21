@@ -15,7 +15,7 @@ public class DialogRepository : BaseRepository, IDialogRepository
 			? $"{message.To}_{message.From}"
 			: $"{message.From}_{message.To}";
 		var sql = @"
-            INSERT INTO citus.dialog_messages (dialog_id, from_user_id, to_user_id, text, sent_at)
+            INSERT INTO dialog_messages (dialog_id, from_user_id, to_user_id, text, sent_at)
             VALUES (@DialogId, @From, @To, @Text, @SentAt)";
         
 		await ExecuteAsync(sql, new
@@ -36,7 +36,7 @@ public class DialogRepository : BaseRepository, IDialogRepository
 		
 		var sql = @"
             SELECT from_user_id AS From, to_user_id AS To, text, sent_at AS SentAt
-            FROM citus.dialog_messages
+            FROM dialog_messages
             WHERE dialog_id = @DialogId
             ORDER BY sent_at";
 

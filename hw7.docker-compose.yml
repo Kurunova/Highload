@@ -37,7 +37,10 @@ services:
       - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - DatabaseSettings__ReplicaConnectionStrings__0=Server=socialnetwork-db-replica-1;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - DatabaseSettings__ReplicaConnectionStrings__1=Server=socialnetwork-db-replica-2;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
-      - DialogDbSettings__MasterConnectionString=Server=citus-coordinator;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DialogDbSettings__PostgreSqlDbSettings__MasterConnectionString=Server=citus-coordinator;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DialogDbSettings__UseTarantoolDb=False
+      - DialogDbSettings__TarantoolDbSettings__ConnectionString=tarantool-db:3301
+      - DialogDbSettings__TarantoolDbSettings__SpaceName=dialog_messages
       - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
       - Jwt__Issuer=socialnetwork.com
       - Jwt__Audience=socialnetwork.com
@@ -277,18 +280,21 @@ services:
     networks:
       - sn-network
 
-  tarantool:
-    image: tarantool/tarantool:latest
-    container_name: tarantool
+  tarantool-db:
+    #image: tarantool/tarantool:latest
+    build:
+      context: ./docker-settings
+      dockerfile: Dockerfile.Tarantool
+    container_name: tarantool-db
     ports:
       - "3301:3301"
     volumes:
-      - ./docker-settings/tarantool:/etc/tarantool  # Локальная папка tarantool монтируется в контейнер
+      - ./docker-settings/volumes/tarantool:/var/lib/tarantool  # Локальная папка tarantool монтируется в контейнер
     environment:
       TARANTOOL_USER_NAME: admin
       TARANTOOL_USER_PASSWORD: password
-    command: tarantool /etc/tarantool/init.lua  # Указываем путь к файлу конфигурации
-  
+    #command: tarantool /opt/tarantool/init.lua  # Указываем путь к файлу конфигурации
+
   # exporter for docker container metrics
   cadvisor:
     image: gcr.io/google-containers/cadvisor:latest

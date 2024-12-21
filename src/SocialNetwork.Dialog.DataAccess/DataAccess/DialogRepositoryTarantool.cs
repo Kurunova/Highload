@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ProGaudi.Tarantool.Client;
 using SocialNetwork.Dialog.DataAccess.Configurations;
 using SocialNetwork.Domain.DataAccess;
@@ -6,17 +7,19 @@ using SocialNetwork.Domain.Entities;
 
 namespace SocialNetwork.Dialog.DataAccess;
 
+/// <summary>
+/// https://www.tarantool.io/en/doc/latest/connector/community/csharp/
+/// </summary>
 public class DialogRepositoryTarantool : IDialogRepository
 {
 	private readonly ILogger<DialogRepository> _logger;
-	private readonly Box _box;
 	private readonly ISpace _dialogMessagesSpace;
 
-	public DialogRepositoryTarantool(ILoggerFactory loggerFactory, DatabaseSettings databaseSettings)
+	public DialogRepositoryTarantool(ILoggerFactory loggerFactory, IOptions<DatabaseSettings> databaseSettings)
 	{
 		_logger = loggerFactory.CreateLogger<DialogRepository>();
 		
-		_dialogMessagesSpace = Initialize(databaseSettings.TarantoolDbSettings?.ConnectionString, databaseSettings.TarantoolDbSettings?.SpaceName)
+		_dialogMessagesSpace = Initialize(databaseSettings.Value?.TarantoolDbSettings?.ConnectionString, databaseSettings.Value?.TarantoolDbSettings?.SpaceName)
 			.GetAwaiter().GetResult();
 	}
 	
@@ -25,7 +28,6 @@ public class DialogRepositoryTarantool : IDialogRepository
 		var box = await Box.Connect(connectionString);
 		var schema = box.GetSchema();
 		var space = await schema.GetSpace(spaceName);
-		//await space.Insert((99999, "BB"));
 		return space; 
 	}
 	
