@@ -1,7 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Globalization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ProGaudi.MsgPack.Light;
 using ProGaudi.Tarantool.Client;
+using ProGaudi.Tarantool.Client.Model;
 using SocialNetwork.Dialog.DataAccess.Configurations;
+using SocialNetwork.Dialog.DataAccess.Entities;
 using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Entities;
 
@@ -25,7 +29,12 @@ public class DialogRepositoryTarantool : IDialogRepository
 	
 	static async Task<ISpace> Initialize(string connectionString, string spaceName)
 	{
-		var box = await Box.Connect(connectionString);
+		var context = new MsgPackContext();
+		context.DiscoverConverters<DialogMessage2>();
+		var clientOptions = new ClientOptions(connectionString, context: context);
+		
+		var box = new Box(clientOptions);
+		await box.Connect();
 		var schema = box.GetSchema();
 		var space = await schema.GetSpace(spaceName);
 		return space; 
@@ -39,13 +48,14 @@ public class DialogRepositoryTarantool : IDialogRepository
 
 		try
 		{
-			await _dialogMessagesSpace.Insert(new object[]
+			await _dialogMessagesSpace.Insert(new DialogMessage2
 			{
-				dialogId,
-				message.From,
-				message.To,
-				message.Text,
-				message.SentAt.ToUniversalTime().ToString("O") // ISO 8601 для совместимости
+				Id = 4, // TODO
+				DialogId = dialogId,
+				From = message.From,
+				To = message.To,
+				Text = message.Text,
+				SentAt = message.SentAt.ToUniversalTime().ToString("O") // ISO 8601 для совместимости
 			});
 		}
 		catch (Exception ex)
@@ -63,9 +73,19 @@ public class DialogRepositoryTarantool : IDialogRepository
 
 		try
 		{
-			var result = await _dialogMessagesSpace.Select<string, DialogMessage>(dialogId);
+			var dialogMessages = await _dialogMessagesSpace.Select<string, DialogMessage2>(dialogId);
 
-			return result.Data.ToList();
+			var result = dialogMessages.Data.ToList().Select(p => new DialogMessage
+			{
+				From = p.From,
+				To = p.To,
+				Text = p.Text,
+				SentAt = DateTime.TryParse(p.SentAt, null, DateTimeStyles.RoundtripKind, out DateTime parsedDt)
+					? parsedDt
+					: DateTime.MinValue
+			});
+			
+			return result;
 		}
 		catch (Exception ex)
 		{

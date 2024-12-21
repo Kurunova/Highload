@@ -1,11 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ProGaudi.MsgPack.Light;
-using ProGaudi.Tarantool.Client;
-using ProGaudi.Tarantool.Client.Model;
 using SocialNetwork.Dialog.DataAccess.Configurations;
 using SocialNetwork.Domain.DataAccess;
-using SocialNetwork.Domain.Entities;
 
 namespace SocialNetwork.Dialog.DataAccess.Extensions;
 
