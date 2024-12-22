@@ -40,7 +40,7 @@ docker exec -it tarantool-db tarantool
 ```json
 {
     "login": "elenaf1",
-    "password": "!QAZ2wsx"
+        "password": "!QAZ2wsx"
 }
 ```
 Добавляем Bearer и отправляем сообщение юзеру 2 (1005259)

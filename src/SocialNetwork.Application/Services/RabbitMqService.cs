@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Exceptions;
 using SocialNetwork.Application.Configurations;
 
 namespace SocialNetwork.Application.Services;
@@ -59,16 +60,25 @@ public class RabbitMqService
 			await using var connection = await factory.CreateConnectionAsync(cancellationToken);
 			await using var channel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-			await channel.ExchangeDeclareAsync(_settings.Exchange, ExchangeType.Topic, cancellationToken: cancellationToken);
-			await channel.QueueDeclareAsync(_settings.Queue, durable: true, exclusive: false, autoDelete: false, arguments: null, cancellationToken: cancellationToken);
-			await channel.QueueBindAsync(_settings.Queue, _settings.Exchange, routingKeyPattern, cancellationToken: cancellationToken);
+			await channel.ExchangeDeclareAsync(_settings.Exchange, ExchangeType.Topic,
+				cancellationToken: cancellationToken);
+			await channel.QueueDeclareAsync(_settings.Queue, durable: true, exclusive: false, autoDelete: false,
+				arguments: null, cancellationToken: cancellationToken);
+			await channel.QueueBindAsync(_settings.Queue, _settings.Exchange, routingKeyPattern,
+				cancellationToken: cancellationToken);
 
 			var consumer = new AsyncEventingBasicConsumer(channel);
 			consumer.ReceivedAsync += receivedAction;
 
-			await channel.BasicConsumeAsync(queue: _settings.Queue, autoAck: true, consumer: consumer, cancellationToken: cancellationToken);
-			
+			await channel.BasicConsumeAsync(queue: _settings.Queue, autoAck: true, consumer: consumer,
+				cancellationToken: cancellationToken);
+
 			await Task.Delay(Timeout.Infinite, cancellationToken);
+		}
+		catch (BrokerUnreachableException unreachableException)
+		{
+			await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+			await Consume(receivedAction, cancellationToken);
 		}
 		catch (Exception ex)
 		{
