@@ -5,7 +5,6 @@ using ProGaudi.MsgPack.Light;
 using ProGaudi.Tarantool.Client;
 using ProGaudi.Tarantool.Client.Model;
 using SocialNetwork.Dialog.DataAccess.Configurations;
-using SocialNetwork.Dialog.DataAccess.Entities;
 using SocialNetwork.Domain.DataAccess;
 using SocialNetwork.Domain.Entities;
 
@@ -18,6 +17,7 @@ public class DialogRepositoryTarantool : IDialogRepository
 {
 	private readonly ILogger<DialogRepository> _logger;
 	private readonly ISpace _dialogMessagesSpace;
+	private static Box Box;
 
 	public DialogRepositoryTarantool(ILoggerFactory loggerFactory, IOptions<DatabaseSettings> databaseSettings)
 	{
@@ -30,11 +30,11 @@ public class DialogRepositoryTarantool : IDialogRepository
 	static async Task<ISpace> Initialize(string connectionString, string spaceName)
 	{
 		var context = new MsgPackContext();
-		context.DiscoverConverters<DialogMessage2>();
 		var clientOptions = new ClientOptions(connectionString, context: context);
 		
 		var box = new Box(clientOptions);
 		await box.Connect();
+		Box = box;
 		var schema = box.GetSchema();
 		var space = await schema.GetSpace(spaceName);
 		return space; 
@@ -48,15 +48,11 @@ public class DialogRepositoryTarantool : IDialogRepository
 
 		try
 		{
-			await _dialogMessagesSpace.Insert(new DialogMessage2
-			{
-				Id = 4, // TODO
-				DialogId = dialogId,
-				From = message.From,
-				To = message.To,
-				Text = message.Text,
-				SentAt = message.SentAt.ToUniversalTime().ToString("O") // ISO 8601 для совместимости
-			});
+			await Box.Call<TarantoolTuple<string, long, long, string, string>, TarantoolTuple<long, string, long, long, string, string>>(
+				"add_dialog_message",
+				new TarantoolTuple<string, long, long, string, string>(
+					dialogId, message.From,  message.To, message.Text, message.SentAt.ToUniversalTime().ToString("O") 
+				));
 		}
 		catch (Exception ex)
 		{
@@ -73,18 +69,26 @@ public class DialogRepositoryTarantool : IDialogRepository
 
 		try
 		{
-			var dialogMessages = await _dialogMessagesSpace.Select<string, DialogMessage2>(dialogId);
+			// var dataResponse = await _dialogMessagesSpace
+			// 	.Select<TarantoolTuple<string>, TarantoolTuple<long, string, long, long, string, string>>(new TarantoolTuple<string>(dialogId));
+			// var dialogMessagesTuple = dataResponse.Data;
 
-			var result = dialogMessages.Data.ToList().Select(p => new DialogMessage
+			var dataResponse = await Box.Call<TarantoolTuple<string>, TarantoolTuple<long, string, long, long, string, string>[]>(
+				"get_dialog_messages",
+				new TarantoolTuple<string>(dialogId)
+			);
+			var dialogMessagesTuple = dataResponse.Data[0];
+			
+			var result = dialogMessagesTuple.Select(p => new DialogMessage
 			{
-				From = p.From,
-				To = p.To,
-				Text = p.Text,
-				SentAt = DateTime.TryParse(p.SentAt, null, DateTimeStyles.RoundtripKind, out DateTime parsedDt)
+				From = p.Item3,
+				To = p.Item4,
+				Text = p.Item5,
+				SentAt = DateTime.TryParse(p.Item6, null, DateTimeStyles.RoundtripKind, out DateTime parsedDt)
 					? parsedDt
 					: DateTime.MinValue
 			});
-			
+
 			return result;
 		}
 		catch (Exception ex)
