@@ -63,3 +63,11 @@ docker exec -it tarantool-db tarantool
 
 Меняем настройку ```DialogDbSettings__UseTarantoolDb``` на ```True```
 проверям тоже самое только для тарантула
+
+
+docker exec -it socialnetwork-api-1 apt-get update
+docker exec -it socialnetwork-api-1 apt-get install -y telnet
+ocker exec -it socialnetwork-api-1 telnet tarantool-db 3301 
+
+docker network ls
+docker network inspect otushighloadarchitect_sn-network

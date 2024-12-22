@@ -22,24 +22,38 @@ public class DialogRepositoryTarantool : IDialogRepository
 	public DialogRepositoryTarantool(ILoggerFactory loggerFactory, IOptions<DatabaseSettings> databaseSettings)
 	{
 		_logger = loggerFactory.CreateLogger<DialogRepository>();
-		
-		_dialogMessagesSpace = Initialize(databaseSettings.Value?.TarantoolDbSettings?.ConnectionString, databaseSettings.Value?.TarantoolDbSettings?.SpaceName)
-			.GetAwaiter().GetResult();
+
+		if (databaseSettings.Value?.TarantoolDbSettings == null) throw new ArgumentException("TarantoolDbSettings is mandatory");
+		try
+		{
+			var connectionString = $"{databaseSettings.Value.TarantoolDbSettings.Host}:{databaseSettings.Value.TarantoolDbSettings.Port}";
+			// var context = new MsgPackContext();
+			// var clientOptions = new ClientOptions(connectionString, context: context);
+			// var box = new Box(clientOptions);
+			//box.Connect().GetAwaiter().GetResult();
+			//Box = box;
+			
+			Box = Box.Connect(connectionString).GetAwaiter().GetResult();
+
+			_logger.LogInformation("Tarantool Db connection established");
+
+			_dialogMessagesSpace = GetSpace(Box, databaseSettings.Value?.TarantoolDbSettings?.SpaceName)
+				.GetAwaiter().GetResult();
+			_logger.LogInformation("Tarantool Db space setup finished");
+		}
+		catch (Exception ex)
+		{
+			_logger.LogInformation($"Tarantool Db error: {ex}");
+		}
 	}
 	
-	static async Task<ISpace> Initialize(string connectionString, string spaceName)
+	private async Task<ISpace> GetSpace(Box box, string spaceName)
 	{
-		var context = new MsgPackContext();
-		var clientOptions = new ClientOptions(connectionString, context: context);
-		
-		var box = new Box(clientOptions);
-		await box.Connect();
-		Box = box;
 		var schema = box.GetSchema();
 		var space = await schema.GetSpace(spaceName);
 		return space; 
 	}
-	
+
 	public async Task AddMessageAsync(DialogMessage message, CancellationToken cancellationToken)
 	{
 		var dialogId = message.To < message.From
