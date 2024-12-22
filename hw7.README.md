@@ -2,6 +2,7 @@
 
 ```shell
 docker-compose -f hw7.docker-compose.yml up -d --build --force-recreate
+docker-compose -f hw7.docker-compose.yml up -d --build --force-recreate tarantool-db
 ```
 
 # https://www.tarantool.io/en/doc/2.11/how-to/getting_started_db/

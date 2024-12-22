@@ -44,7 +44,18 @@ function get_dialog_messages(dialog_id)
     return box.space.dialog_messages:select{dialog_id}
 end
 
+function get_dialog_messages_paginated(dialog_id, limit, offset)
+    limit = limit or 10 -- Значение по умолчанию, если limit не указан
+    offset = offset or 0 -- Значение по умолчанию, если offset не указан
+
+    return box.space.dialog_messages:select(
+        {dialog_id},
+        {iterator = 'EQ', limit = limit, offset = offset}
+    )
+end
+
 box.schema.func.create('add_dialog_message', {if_not_exists = true})
 box.schema.func.create('get_dialog_messages', {if_not_exists = true})
+box.schema.func.create('get_dialog_messages_paginated', {if_not_exists = true})
 
 print("Tarantool instance is configured and running!")

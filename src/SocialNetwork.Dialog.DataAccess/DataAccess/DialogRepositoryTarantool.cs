@@ -73,9 +73,15 @@ public class DialogRepositoryTarantool : IDialogRepository
 			// 	.Select<TarantoolTuple<string>, TarantoolTuple<long, string, long, long, string, string>>(new TarantoolTuple<string>(dialogId));
 			// var dialogMessagesTuple = dataResponse.Data;
 
-			var dataResponse = await Box.Call<TarantoolTuple<string>, TarantoolTuple<long, string, long, long, string, string>[]>(
-				"get_dialog_messages",
-				new TarantoolTuple<string>(dialogId)
+			// var dataResponse = await Box.Call<TarantoolTuple<string>, TarantoolTuple<long, string, long, long, string, string>[]>(
+			// 	"get_dialog_messages",
+			// 	new TarantoolTuple<string>(dialogId)
+			// );
+			// var dialogMessagesTuple = dataResponse.Data[0];
+			
+			var dataResponse = await Box.Call<TarantoolTuple<string, int, int>, TarantoolTuple<long, string, long, long, string, string>[]>(
+				"get_dialog_messages_paginated",
+				new TarantoolTuple<string, int, int>(dialogId, 100, 0)
 			);
 			var dialogMessagesTuple = dataResponse.Data[0];
 			
