@@ -18,7 +18,7 @@ public sealed class Startup
 	{
 		Log.Logger = new LoggerConfiguration()
 			.ReadFrom.Configuration(configuration)
-			.WriteTo.Console()
+			//.WriteTo.Console()
 			.CreateLogger();
 
 		_configuration = configuration;

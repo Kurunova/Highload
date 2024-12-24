@@ -12,7 +12,11 @@
         "DatabaseSettings__MasterConnectionString": "Server=localhost;Port=5400;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true",
         "DatabaseSettings__ReplicaConnectionStrings__0": "Server=localhost;Port=5400;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true",
         "DatabaseSettings__ReplicaConnectionStrings__1": "Server=localhost;Port=5400;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true",
-        "DialogDbSettings__MasterConnectionString": "Server=localhost;Port=5500;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true",
+        "DialogDbSettings__PostgreSqlDbSettings__MasterConnectionString": "Server=localhost;Port=5500;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true",
+        "DialogDbSettings__UseTarantoolDb": "True",
+        "DialogDbSettings__TarantoolDbSettings__Host": "localhost",
+        "DialogDbSettings__TarantoolDbSettings__Port": "3301",
+        "DialogDbSettings__TarantoolDbSettings__SpaceName": "dialog_messages",
         "Jwt__Key": "vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=",
         "Jwt__Issuer": "socialnetwork.com",
         "Jwt__Audience": "socialnetwork.com",
@@ -24,7 +28,10 @@
         "RabbitMQ__Password": "guest",
         "RabbitMQ__Exchange": "PostFeedExchange",
         "RabbitMQ__Queue": "PostFeedQueue",
-        "RabbitMQ__RoutingKeyPrefix": "feed.user."
+        "RabbitMQ__RoutingKeyPrefix": "feed.user.",
+        "Serilog__Using__0": "Serilog.Sinks.Console",
+        "Serilog__MinimumLevel": "Debug",
+        "Serilog__WriteTo__0__Name": "Console"
       }
     },
     "SocialNetworkApi.DbMigrator": {

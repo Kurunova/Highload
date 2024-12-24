@@ -1,0 +1,3 @@
+FROM tarantool/tarantool:latest
+COPY tarantool/init.lua /opt/tarantool
+CMD ["tarantool", "/opt/tarantool/init.lua"]

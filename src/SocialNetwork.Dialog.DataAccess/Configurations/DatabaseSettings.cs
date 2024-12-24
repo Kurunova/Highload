@@ -2,6 +2,7 @@
 
 public class DatabaseSettings
 {
-	public string MasterConnectionString { get; set; }
-	//public List<string> ReplicaConnectionStrings { get; set; }
+	public bool UseTarantoolDb { get; set; }
+	public PostgreSqlDbSettings PostgreSqlDbSettings { get; set; }
+	public TarantoolDbSettings TarantoolDbSettings { get; set; }
 }

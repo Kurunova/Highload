@@ -12,7 +12,7 @@ public class PostgresConnectionFactory : IPostgresConnectionFactory
 
 	public PostgresConnectionFactory(IOptions<DatabaseSettings> databaseSettings)
 	{
-		_masterConnectionString = databaseSettings?.Value?.MasterConnectionString ?? throw new ArgumentException("Master connection string is mandatory");
+		_masterConnectionString = databaseSettings?.Value?.PostgreSqlDbSettings?.MasterConnectionString ?? throw new ArgumentException("Master connection string is mandatory");
 		//_replicaConnectionStrings = databaseSettings?.Value?.ReplicaConnectionStrings ?? throw new ArgumentException("Replica connection strings are mandatory");
 	}
 

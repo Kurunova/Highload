@@ -4,7 +4,7 @@
 
 http://localhost:5001/swagger/index.html (или для локального запуска http://localhost:7015/swagger/index.html)
 
-Добавляем юзера 1 ```/Users/register```
+Добавляем юзера 1 (1005261) ```/Users/register```
 ```json
 {
     "login": "elenaf1",
@@ -17,7 +17,7 @@ http://localhost:5001/swagger/index.html (или для локального з�
     "hobbies": "No"
 }
 ```
-Добавляем юзера 2 ```/Users/register```
+Добавляем юзера 2 (1005259) ```/Users/register```
 ```json
 {
     "login": "elenaf2",
@@ -30,7 +30,7 @@ http://localhost:5001/swagger/index.html (или для локального з�
     "hobbies": "No"
 }
 ```
-Логинимся под юзером 2 ```/Users/login```
+Логинимся под юзером 2 (1005259) ```/Users/login```  
 ```json
 {
     "login": "elenaf2",
@@ -41,13 +41,13 @@ http://localhost:5001/swagger/index.html (или для локального з�
 Задать Bearer (apiKey) в сваггер
 Запоминаем токен (будет нужен для постмана {tokenUser2})
 
-Добавляем подописку юзера 2 на юзера 1 ```/Users/friend/set/{userId}```
+Добавляем подописку юзера 2 (1005259) на юзера 1 (1005261) ```/Users/friend/set/{userId}```
 ```userId = {userId }```
 
-Логинимся под юзером 1 ```/Users/login```
+Логинимся под юзером 1 (1005261) ```/Users/login```
 ```json
 {
-    "login": "elenaf2",
+    "login": "elenaf1",
     "password": "!QAZ2wsx"
 }
 ```
@@ -58,7 +58,7 @@ ws://localhost:5001/post/feed/posted?access_token=your_jwt_token={tokenUser2} (�
 handshake: {"protocol":"json","version":1}
 ```
 
-Отправляем пост под юзером 2 в сваггер ```/Posts/create```
+Отправляем пост под юзером 1 (1005259) в сваггер ```/Posts/create```
 ```json
 {
   "text": "Hello!"
