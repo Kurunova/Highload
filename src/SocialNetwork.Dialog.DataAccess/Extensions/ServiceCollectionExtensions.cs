@@ -23,11 +23,11 @@ public static class ServiceCollectionExtensions
 
 		if (!databaseSettings.UseTarantoolDb)
 		{
-			serviceCollection.AddTransient<IDialogRepository, DialogRepository>();
+			serviceCollection.AddSingleton<IDialogRepository, DialogRepository>();
 		}
 		else
 		{
-			serviceCollection.AddTransient<IDialogRepository, DialogRepositoryTarantool>();
+			serviceCollection.AddSingleton<IDialogRepository, DialogRepositoryTarantool>();
 		}
 		
 		return serviceCollection;

@@ -22,7 +22,6 @@ if not box.space.dialog_messages then
     -- Создаем составной первичный ключ (dialog_id, id)
     box.space.dialog_messages:create_index('primary', {
         parts = {
-            {field = 'dialog_id', type = 'string'},
             {field = 'id', type = 'unsigned'}
         },
         if_not_exists = true
@@ -41,14 +40,14 @@ function add_dialog_message(dialog_id, from_user_id, to_user_id, text, sent_at)
 end
 
 function get_dialog_messages(dialog_id)
-    return box.space.dialog_messages:select{dialog_id}
+    return box.space.dialog_messages.index.dialog_id_index:select{dialog_id}
 end
 
 function get_dialog_messages_paginated(dialog_id, limit, offset)
     limit = limit or 10 -- Значение по умолчанию, если limit не указан
     offset = offset or 0 -- Значение по умолчанию, если offset не указан
 
-    return box.space.dialog_messages:select(
+    return box.space.dialog_messages.index.dialog_id_index:select(
         {dialog_id},
         {iterator = 'EQ', limit = limit, offset = offset}
     )

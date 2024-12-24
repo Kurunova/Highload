@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ProGaudi.MsgPack.Light;
 using ProGaudi.Tarantool.Client;
 using ProGaudi.Tarantool.Client.Model;
 using SocialNetwork.Dialog.DataAccess.Configurations;

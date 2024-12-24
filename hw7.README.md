@@ -27,6 +27,7 @@ add_dialog_message('1000_1005257', 1000, 1005257, 'Hello from function!', '2024-
 s:select{'1000_1005257'}
 s:select{'1005259_1005261'}
 
+box.space.dialog_messages.index.dialog_id_index:select{'1000_1005257'}
 box.space.dialog_messages:select{'1000_1005257'}
 ```
 
