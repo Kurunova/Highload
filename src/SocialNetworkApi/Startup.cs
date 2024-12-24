@@ -3,6 +3,7 @@ using Serilog;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
 using SocialNetwork.Dialog.DataAccess.Extensions;
+using SocialNetwork.Dialog.Extensions;
 using SocialNetworkApi.BackgroundServices;
 using SocialNetworkApi.Extensions;
 using SocialNetworkApi.Hubs;
@@ -26,8 +27,11 @@ public sealed class Startup
 
 	public void ConfigureServices(IServiceCollection serviceCollection)
 	{
-		serviceCollection.AddDatabase(_configuration);
+		// Dialog move to Grpc
 		serviceCollection.AddDialogDatabase(_configuration);
+		serviceCollection.AddDialog(_configuration);
+		
+		serviceCollection.AddDatabase(_configuration);
 		serviceCollection.AddApplication(_configuration);
 		serviceCollection.AddJwt(_configuration);
 		serviceCollection.AddWebSockets(_configuration);

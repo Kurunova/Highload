@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SocialNetwork.Dialog.Services;
 using SocialNetwork.Domain.Models.Dialogs;
-using SocialNetwork.Domain.Services;
 using SocialNetworkApi.Services;
 
 namespace SocialNetworkApi.Controllers;

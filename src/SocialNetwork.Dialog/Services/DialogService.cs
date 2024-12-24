@@ -1,8 +1,7 @@
-﻿using SocialNetwork.Domain.DataAccess;
-using SocialNetwork.Domain.Entities;
-using SocialNetwork.Domain.Services;
+﻿using SocialNetwork.Dialog.DataAccess;
+using SocialNetwork.Dialog.Entities;
 
-namespace SocialNetwork.Application.Services;
+namespace SocialNetwork.Dialog.Services;
 
 public class DialogService : IDialogService
 {
@@ -13,7 +12,7 @@ public class DialogService : IDialogService
 		_dialogRepository = dialogRepository;
 	}
 
-	public async Task SendMessageAsync(long senderId, long recipientId, string text, CancellationToken cancellationToken)
+	public async Task<bool> SendMessageAsync(long senderId, long recipientId, string text, CancellationToken cancellationToken)
 	{
 		var message = new DialogMessage
 		{
@@ -24,6 +23,7 @@ public class DialogService : IDialogService
 		};
 
 		await _dialogRepository.AddMessageAsync(message, cancellationToken);
+		return true;
 	}
 
 	public async Task<IEnumerable<DialogMessage>> GetDialogAsync(long userId1, long userId2, CancellationToken cancellationToken)

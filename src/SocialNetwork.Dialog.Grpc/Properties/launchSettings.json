@@ -1,0 +1,42 @@
+﻿{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5055",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "https://localhost:7069;http://localhost:5055",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "SocialNetwork.Dialog.Grpc": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7069;http://localhost:5055",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "HTTP_PORT": "7069",
+        "GRPC_PORT": "5062",
+        "DialogDbSettings__PostgreSqlDbSettings__MasterConnectionString": "Server=localhost;Port=5500;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true",
+        "DialogDbSettings__UseTarantoolDb": "True",
+        "DialogDbSettings__TarantoolDbSettings__Host": "localhost",
+        "DialogDbSettings__TarantoolDbSettings__Port": "3301",
+        "DialogDbSettings__TarantoolDbSettings__SpaceName": "dialog_messages",
+        "Serilog__Using__0": "Serilog.Sinks.Console",
+        "Serilog__MinimumLevel": "Debug",
+        "Serilog__WriteTo__0__Name": "Console"
+      }
+    }
+  }
+}

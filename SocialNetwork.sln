@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{AE5135
 		hw6.docker-compose.yml = hw6.docker-compose.yml
 		hw7.docker-compose.yml = hw7.docker-compose.yml
 		hw7.README.md = hw7.README.md
+		hw8.README.md = hw8.README.md
+		hw8.docker-compose.yml = hw8.docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetworkApi", "src\SocialNetworkApi\SocialNetworkApi.csproj", "{AEC279F3-C019-470D-9615-01B4D2DAF7D0}"
@@ -34,6 +36,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.DbMigrator", "src\SocialNetwork.DbMigrator\SocialNetwork.DbMigrator.csproj", "{F9E2F6E2-348B-4A06-8499-C347413549C2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Dialog.DataAccess", "src\SocialNetwork.Dialog.DataAccess\SocialNetwork.Dialog.DataAccess.csproj", "{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Dialog.Grpc", "src\SocialNetwork.Dialog.Grpc\SocialNetwork.Dialog.Grpc.csproj", "{48D6ED16-D2F2-4A24-B42B-A338C240D457}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Dialog", "src\SocialNetwork.Dialog\SocialNetwork.Dialog.csproj", "{821E5838-07F7-4802-A073-8F8489AA5B98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +71,14 @@ Global
 		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48D6ED16-D2F2-4A24-B42B-A338C240D457}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48D6ED16-D2F2-4A24-B42B-A338C240D457}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48D6ED16-D2F2-4A24-B42B-A338C240D457}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48D6ED16-D2F2-4A24-B42B-A338C240D457}.Release|Any CPU.Build.0 = Release|Any CPU
+		{821E5838-07F7-4802-A073-8F8489AA5B98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{821E5838-07F7-4802-A073-8F8489AA5B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{821E5838-07F7-4802-A073-8F8489AA5B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{821E5838-07F7-4802-A073-8F8489AA5B98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AEC279F3-C019-470D-9615-01B4D2DAF7D0} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
@@ -73,5 +87,7 @@ Global
 		{2D90B652-EDC6-43EE-B509-541BD0225015} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 		{F9E2F6E2-348B-4A06-8499-C347413549C2} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
+		{48D6ED16-D2F2-4A24-B42B-A338C240D457} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
+		{821E5838-07F7-4802-A073-8F8489AA5B98} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 	EndGlobalSection
 EndGlobal
