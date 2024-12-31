@@ -41,11 +41,12 @@ services:
       - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - DatabaseSettings__ReplicaConnectionStrings__0=Server=socialnetwork-db-replica-1;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - DatabaseSettings__ReplicaConnectionStrings__1=Server=socialnetwork-db-replica-2;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
-      - DialogDbSettings__PostgreSqlDbSettings__MasterConnectionString=Server=citus-coordinator;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
-      - DialogDbSettings__UseTarantoolDb=True
-      - DialogDbSettings__TarantoolDbSettings__Host=tarantool-db
-      - DialogDbSettings__TarantoolDbSettings__Port=3301
-      - DialogDbSettings__TarantoolDbSettings__SpaceName=dialog_messages
+#      - DialogDbSettings__PostgreSqlDbSettings__MasterConnectionString=Server=citus-coordinator;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+#      - DialogDbSettings__UseTarantoolDb=True
+#      - DialogDbSettings__TarantoolDbSettings__Host=tarantool-db
+#      - DialogDbSettings__TarantoolDbSettings__Port=3301
+#      - DialogDbSettings__TarantoolDbSettings__SpaceName=dialog_messages
+      - DialogService__GrpcConnectionString=grpc://socialnetwork-dialog-grpc-1:6000/
       - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
       - Jwt__Issuer=socialnetwork.com
       - Jwt__Audience=socialnetwork.com

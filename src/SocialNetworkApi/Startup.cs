@@ -2,8 +2,8 @@
 using Serilog;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
-using SocialNetwork.Dialog.DataAccess.Extensions;
-using SocialNetwork.Dialog.Extensions;
+// using SocialNetwork.Dialog.DataAccess.Extensions;
+// using SocialNetwork.Dialog.Extensions;
 using SocialNetworkApi.BackgroundServices;
 using SocialNetworkApi.Extensions;
 using SocialNetworkApi.Hubs;
@@ -27,16 +27,21 @@ public sealed class Startup
 
 	public void ConfigureServices(IServiceCollection serviceCollection)
 	{
-		// Dialog move to Grpc
-		serviceCollection.AddDialogDatabase(_configuration);
-		serviceCollection.AddDialog(_configuration);
-		
 		serviceCollection.AddDatabase(_configuration);
 		serviceCollection.AddApplication(_configuration);
 		serviceCollection.AddJwt(_configuration);
 		serviceCollection.AddWebSockets(_configuration);
 		
 		serviceCollection.AddHostedService<PostFeedConsumer>();
+		
+		// Dialog move to Grpc
+		// serviceCollection.AddDialogDatabase(_configuration);
+		// serviceCollection.AddDialog(_configuration);
+		var dialogServiceAddress = _configuration.GetValue<string>("DialogService:GrpcConnectionString");
+		serviceCollection.AddGrpcClient<SocialNetwork.Dialog.Grpc.GrpcDialogService.GrpcDialogServiceClient>(options =>
+		{
+			options.Address = new Uri(dialogServiceAddress);
+		});
 		
 		serviceCollection.AddControllers();
 		serviceCollection.AddEndpointsApiExplorer();

@@ -19,3 +19,25 @@ message
     "text": "Hello from GRPC!"
 }
 ```
+
+Заходим на апи http://localhost:5001/swagger/index.html
+
+Логинимся под юзером 1 (1005261) ```/Users/login```
+```json
+{
+    "login": "elenaf1",
+        "password": "!QAZ2wsx"
+}
+```
+
+Авторизуемся с Bearer <token>
+
+Проверяем сообщения с юзером 2 (1005259)
+```/Dialogs/{user_id}/list```
+
+Проверяем отправку сообщения юзеру 2 (1005259) ```/Dialogs/{user_id}/send```
+```json
+{
+  "text": "Test me with Grpc!"
+}
+```
