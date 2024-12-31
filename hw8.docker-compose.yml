@@ -46,7 +46,7 @@ services:
 #      - DialogDbSettings__TarantoolDbSettings__Host=tarantool-db
 #      - DialogDbSettings__TarantoolDbSettings__Port=3301
 #      - DialogDbSettings__TarantoolDbSettings__SpaceName=dialog_messages
-      - DialogService__GrpcConnectionString=grpc://socialnetwork-dialog-grpc-1:6000/
+      - DialogService__GrpcConnectionString=http://socialnetwork-dialog-grpc-1:6000/
       - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
       - Jwt__Issuer=socialnetwork.com
       - Jwt__Audience=socialnetwork.com
