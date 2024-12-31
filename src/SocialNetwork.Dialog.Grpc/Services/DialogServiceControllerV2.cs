@@ -18,8 +18,8 @@ public class DialogServiceControllerV2 : GrpcDialogService.GrpcDialogServiceBase
 
 	public override async Task<SendMessageResponse> SendMessage(SendMessageRequest request, ServerCallContext context)
 	{
-		var version = context.RequestHeaders.GetValue("api-version");
-		_logger.LogInformation($"GrpcDialogService:V2:SendMessage: api-version {version}, request {JsonSerializer.Serialize(request)}");
+		var xRequestId = context.RequestHeaders.GetValue("X-Request-ID");
+		_logger.LogInformation($"GrpcDialogService:V2:SendMessage: X-Request-ID {xRequestId}, request {JsonSerializer.Serialize(request)}");
 		
 		var result = await _dialogService.SendMessageAsync(request.SenderId, request.RecipientId, request.Text, context.CancellationToken);
 		
@@ -31,8 +31,8 @@ public class DialogServiceControllerV2 : GrpcDialogService.GrpcDialogServiceBase
 	
 	public override async Task<GetMessagesResponse> GetMessages(GetMessagesRequest request, ServerCallContext context)
 	{
-		var version = context.RequestHeaders.GetValue("api-version");
-		_logger.LogInformation($"GrpcDialogService:V2:GetMessages: api-version {version}, request {JsonSerializer.Serialize(request)}");
+		var version = context.RequestHeaders.GetValue("X-Request-ID");
+		_logger.LogInformation($"GrpcDialogService:V2:GetMessages: X-Request-ID {version}, request {JsonSerializer.Serialize(request)}");
 		
 		var messages = await _dialogService.GetDialogAsync(request.UserId1, request.UserId2, context.CancellationToken);
 

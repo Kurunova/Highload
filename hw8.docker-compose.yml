@@ -62,6 +62,7 @@ services:
       - Serilog__Using__0=Serilog.Sinks.Console
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console
+      - Serilog__WriteTo__0__Args__outputTemplate={Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Properties} {Message:lj}{NewLine}{Exception}
     ports:
       - "5001:8080"
     networks:
