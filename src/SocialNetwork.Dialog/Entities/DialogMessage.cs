@@ -1,4 +1,4 @@
-﻿namespace SocialNetwork.Domain.Entities;
+﻿namespace SocialNetwork.Dialog.Entities;
 
 public class DialogMessage
 {

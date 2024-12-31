@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using SocialNetwork.Domain.DataAccess;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Dialog.Entities;
 
 namespace SocialNetwork.Dialog.DataAccess;
 

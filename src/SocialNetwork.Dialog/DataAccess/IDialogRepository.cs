@@ -1,6 +1,6 @@
-﻿using SocialNetwork.Domain.Entities;
+﻿using SocialNetwork.Dialog.Entities;
 
-namespace SocialNetwork.Domain.DataAccess;
+namespace SocialNetwork.Dialog.DataAccess;
 
 public interface IDialogRepository
 {

@@ -4,8 +4,7 @@ using Microsoft.Extensions.Options;
 using ProGaudi.Tarantool.Client;
 using ProGaudi.Tarantool.Client.Model;
 using SocialNetwork.Dialog.DataAccess.Configurations;
-using SocialNetwork.Domain.DataAccess;
-using SocialNetwork.Domain.Entities;
+using SocialNetwork.Dialog.Entities;
 
 namespace SocialNetwork.Dialog.DataAccess;
 
