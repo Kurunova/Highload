@@ -74,7 +74,7 @@ services:
     depends_on:
       - tarantool-db
     environment:
-      - HTTP_PORT=8090
+      # - HTTP_PORT=8090
       - GRPC_PORT=6000
       - DialogDbSettings__PostgreSqlDbSettings__MasterConnectionString=Server=citus-coordinator;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - DialogDbSettings__UseTarantoolDb=True

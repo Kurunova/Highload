@@ -21,25 +21,19 @@ public sealed class Startup
 
 	public void ConfigureServices(IServiceCollection serviceCollection)
 	{
+		serviceCollection.AddDialogDatabase(_configuration);
+		serviceCollection.AddDialog(_configuration);
+		
 		serviceCollection.AddGrpc(options =>
 		{
 			//options.Interceptors.Add<LoggerInterceptor>();
 		});
-		
-		serviceCollection.AddDialogDatabase(_configuration);
-		serviceCollection.AddDialog(_configuration);
-		
 		serviceCollection.AddGrpcReflection();
-		serviceCollection.AddControllers();
-		serviceCollection.AddEndpointsApiExplorer();
-		serviceCollection.AddSwaggerGen();
 	}
 
 	public void Configure(IApplicationBuilder applicationBuilder)
 	{
 		applicationBuilder.UseRouting();
-		applicationBuilder.UseSwagger();
-		applicationBuilder.UseSwaggerUI();
 		applicationBuilder.UseHttpsRedirection();
 
 		applicationBuilder.UseEndpoints(endpointRouteBuilder =>

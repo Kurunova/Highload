@@ -9,8 +9,8 @@ await Host
 	.ConfigureWebHostDefaults(builder => builder.UseStartup<Startup>()
 		.ConfigureKestrel(option => 
 		{
-			if(int.TryParse(Environment.GetEnvironmentVariable(EnvironmentVariableConstants.HTTP_PORT), out var httpPort))
-				option.Listen(IPAddress.Any, httpPort, options => options.Protocols = HttpProtocols.Http1);		
+			// if(int.TryParse(Environment.GetEnvironmentVariable(EnvironmentVariableConstants.HTTP_PORT), out var httpPort))
+			// 	option.Listen(IPAddress.Any, httpPort, options => options.Protocols = HttpProtocols.Http1);		
 			if(int.TryParse(Environment.GetEnvironmentVariable(EnvironmentVariableConstants.GRPC_PORT), out var grpcPort))
 				option.Listen(IPAddress.Any, grpcPort, options => options.Protocols = HttpProtocols.Http2);	
 		}))
