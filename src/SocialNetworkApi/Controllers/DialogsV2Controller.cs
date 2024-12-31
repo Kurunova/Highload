@@ -1,27 +1,24 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Grpc.Net.ClientFactory;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SocialNetwork.Dialog.Grpc;
-//using SocialNetwork.Dialog.Services;
+using SocialNetwork.Dialog.Grpc.V2;
 using SocialNetworkApi.Services;
 using SendMessageRequest = SocialNetwork.Domain.Models.Dialogs.SendMessageRequest;
 
 namespace SocialNetworkApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v2/dialog")]
 [Authorize]
-public class DialogsController : BaseController
+public class DialogsV2Controller : BaseController
 {
-	//private readonly IDialogService _dialogService;
-	private readonly SocialNetwork.Dialog.Grpc.GrpcDialogService.GrpcDialogServiceClient _grpcDialogServiceClient;
+	private readonly GrpcDialogService.GrpcDialogServiceClient _grpcDialogServiceClient;
 
-	public DialogsController(
+	public DialogsV2Controller(
 		JwtTokenService jwtTokenService,
-		//IDialogService dialogService,
-		GrpcDialogService.GrpcDialogServiceClient grpcDialogServiceClient) : base(jwtTokenService)
+		GrpcClientFactory grpcClientFactory) : base(jwtTokenService)
 	{
-		//_dialogService = dialogService;
-		_grpcDialogServiceClient = grpcDialogServiceClient;
+		_grpcDialogServiceClient = grpcClientFactory.CreateClient<GrpcDialogService.GrpcDialogServiceClient>("GrpcDialogServiceClientV2");
 	}
 
 	/// <summary>
@@ -36,7 +33,7 @@ public class DialogsController : BaseController
 		var senderId = GetCurrentUserId();
 
 		//await _dialogService.SendMessageAsync(senderId, user_id, request.Text, cancellationToken);
-		var sendMessageRequest = new SocialNetwork.Dialog.Grpc.SendMessageRequest { SenderId = senderId, RecipientId = user_id, Text = request.Text };
+		var sendMessageRequest = new SocialNetwork.Dialog.Grpc.V2.SendMessageRequest { SenderId = senderId, RecipientId = user_id, Text = request.Text };
 		await _grpcDialogServiceClient.SendMessageAsync(sendMessageRequest);
 
 		return Ok("Message sent successfully.");
@@ -50,8 +47,7 @@ public class DialogsController : BaseController
 	{
 		var currentUserId = GetCurrentUserId();
 
-		//var messages = await _dialogService.GetDialogAsync(currentUserId, user_id, cancellationToken);
-		var sendMessageRequest = new SocialNetwork.Dialog.Grpc.GetMessagesRequest { UserId1 = currentUserId, UserId2 = user_id };
+		var sendMessageRequest = new SocialNetwork.Dialog.Grpc.V2.GetMessagesRequest { UserId1 = currentUserId, UserId2 = user_id };
 		var sendMessageResponse = await _grpcDialogServiceClient.GetMessagesAsync(sendMessageRequest);
 		var messages = sendMessageResponse.Messages;
 		

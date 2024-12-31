@@ -1,14 +1,16 @@
+using System.Text.Json;
 using Grpc.Core;
 using SocialNetwork.Dialog.Services;
+using SocialNetwork.Dialog.Grpc.V1;
 
 namespace SocialNetwork.Dialog.Grpc.Services;
 
-public class DialogServiceController : GrpcDialogService.GrpcDialogServiceBase
+public class DialogServiceControllerV1 : GrpcDialogService.GrpcDialogServiceBase
 {
-	private readonly ILogger<DialogServiceController> _logger;
+	private readonly ILogger<DialogServiceControllerV1> _logger;
 	private readonly IDialogService _dialogService;
 
-	public DialogServiceController(ILogger<DialogServiceController> logger, IDialogService dialogService)
+	public DialogServiceControllerV1(ILogger<DialogServiceControllerV1> logger, IDialogService dialogService)
 	{
 		_logger = logger;
 		_dialogService = dialogService;
@@ -16,6 +18,9 @@ public class DialogServiceController : GrpcDialogService.GrpcDialogServiceBase
 
 	public override async Task<SendMessageResponse> SendMessage(SendMessageRequest request, ServerCallContext context)
 	{
+		var version = context.RequestHeaders.GetValue("api-version");
+		_logger.LogInformation($"GrpcDialogService:V1:SendMessage: api-version {version}, request {JsonSerializer.Serialize(request)}");
+		
 		var result = await _dialogService.SendMessageAsync(request.SenderId, request.RecipientId, request.Text, context.CancellationToken);
 		
 		return new SendMessageResponse
@@ -26,10 +31,13 @@ public class DialogServiceController : GrpcDialogService.GrpcDialogServiceBase
 	
 	public override async Task<GetMessagesResponse> GetMessages(GetMessagesRequest request, ServerCallContext context)
 	{
+		var version = context.RequestHeaders.GetValue("api-version");
+		_logger.LogInformation($"GrpcDialogService:V1:GetMessages: api-version {version}, request {JsonSerializer.Serialize(request)}");
+		
 		var messages = await _dialogService.GetDialogAsync(request.UserId1, request.UserId2, context.CancellationToken);
 
 		var response = new GetMessagesResponse();
-		response.Messages.AddRange(messages.Select(p => new SocialNetwork.Dialog.Grpc.Message
+		response.Messages.AddRange(messages.Select(p => new Message
 		{
 			From = p.From,
 			To = p.To,

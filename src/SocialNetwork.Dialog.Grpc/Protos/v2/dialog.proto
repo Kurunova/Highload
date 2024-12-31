@@ -2,9 +2,9 @@ syntax = "proto3";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
 
-option csharp_namespace = "SocialNetwork.Dialog.Grpc";
+option csharp_namespace = "SocialNetwork.Dialog.Grpc.V2";
 
-package greet;
+package dialog.v2;
 
 service GrpcDialogService {
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);

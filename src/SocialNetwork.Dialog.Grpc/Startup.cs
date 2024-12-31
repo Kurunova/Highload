@@ -38,7 +38,8 @@ public sealed class Startup
 
 		applicationBuilder.UseEndpoints(endpointRouteBuilder =>
 		{
-			endpointRouteBuilder.MapGrpcService<DialogServiceController>();
+			endpointRouteBuilder.MapGrpcService<DialogServiceControllerV1>();
+			endpointRouteBuilder.MapGrpcService<DialogServiceControllerV2>();
 			endpointRouteBuilder.MapGrpcReflectionService();
 			endpointRouteBuilder.MapGet("", () => "Hello Wold!");
 		});

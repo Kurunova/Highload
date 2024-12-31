@@ -38,10 +38,18 @@ public sealed class Startup
 		// serviceCollection.AddDialogDatabase(_configuration);
 		// serviceCollection.AddDialog(_configuration);
 		var dialogServiceAddress = _configuration.GetValue<string>("DialogService:GrpcConnectionString");
-		serviceCollection.AddGrpcClient<SocialNetwork.Dialog.Grpc.GrpcDialogService.GrpcDialogServiceClient>(options =>
-		{
-			options.Address = new Uri(dialogServiceAddress);
-		});
+		serviceCollection.AddGrpcClient<SocialNetwork.Dialog.Grpc.V1.GrpcDialogService.GrpcDialogServiceClient>(
+			"GrpcDialogServiceClientV1", 
+			options =>
+			{
+				options.Address = new Uri(dialogServiceAddress);
+			});
+		serviceCollection.AddGrpcClient<SocialNetwork.Dialog.Grpc.V2.GrpcDialogService.GrpcDialogServiceClient>(
+			"GrpcDialogServiceClientV2", 
+			options =>
+			{
+				options.Address = new Uri(dialogServiceAddress);
+			});
 		
 		serviceCollection.AddControllers();
 		serviceCollection.AddEndpointsApiExplorer();

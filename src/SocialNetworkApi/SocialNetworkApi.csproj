@@ -37,7 +37,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="Protos\dialog.proto" GrpcServices="Client" />
+        <Protobuf Include="Protos\v1\dialog.proto" GrpcServices="Client" />
+        <Protobuf Include="Protos\v2\dialog.proto" GrpcServices="Client" />
     </ItemGroup>
 
 </Project>
