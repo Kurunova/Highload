@@ -2,10 +2,13 @@
 using Serilog;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
-using SocialNetwork.Dialog.DataAccess.Extensions;
+// using SocialNetwork.Dialog.DataAccess.Extensions;
+// using SocialNetwork.Dialog.Extensions;
 using SocialNetworkApi.BackgroundServices;
 using SocialNetworkApi.Extensions;
 using SocialNetworkApi.Hubs;
+using SocialNetworkApi.Interceptors;
+using SocialNetworkApi.Logs;
 using SocialNetworkApi.Middlewares;
 
 namespace SocialNetworkApi;
@@ -18,6 +21,7 @@ public sealed class Startup
 	{
 		Log.Logger = new LoggerConfiguration()
 			.ReadFrom.Configuration(configuration)
+			.Enrich.FromLogContext()
 			//.WriteTo.Console()
 			.CreateLogger();
 
@@ -27,12 +31,31 @@ public sealed class Startup
 	public void ConfigureServices(IServiceCollection serviceCollection)
 	{
 		serviceCollection.AddDatabase(_configuration);
-		serviceCollection.AddDialogDatabase(_configuration);
 		serviceCollection.AddApplication(_configuration);
 		serviceCollection.AddJwt(_configuration);
 		serviceCollection.AddWebSockets(_configuration);
 		
 		serviceCollection.AddHostedService<PostFeedConsumer>();
+		
+		// Grpc
+		serviceCollection.AddTransient<RequestIdInterceptor>();
+		var dialogServiceAddress = _configuration.GetValue<string>("DialogService:GrpcConnectionString");
+		serviceCollection.AddGrpcClient<SocialNetwork.Dialog.Grpc.V1.GrpcDialogService.GrpcDialogServiceClient>(
+			"GrpcDialogServiceClientV1", 
+			options =>
+			{
+				options.Address = new Uri(dialogServiceAddress);
+			})
+			.AddInterceptor<RequestIdInterceptor>();
+		serviceCollection.AddGrpcClient<SocialNetwork.Dialog.Grpc.V2.GrpcDialogService.GrpcDialogServiceClient>(
+			"GrpcDialogServiceClientV2", 
+			options =>
+			{
+				options.Address = new Uri(dialogServiceAddress);
+			})
+			.AddInterceptor<RequestIdInterceptor>();
+		
+		serviceCollection.AddHttpContextAccessor();
 		
 		serviceCollection.AddControllers();
 		serviceCollection.AddEndpointsApiExplorer();
@@ -70,6 +93,7 @@ public sealed class Startup
 	public void Configure(IApplicationBuilder applicationBuilder)
 	{
 		applicationBuilder.UseMiddleware<ExceptionMiddleware>();
+		applicationBuilder.UseMiddleware<RequestIdMiddleware>();
 		applicationBuilder.UseWebSockets();
 		applicationBuilder.UseRouting();
 		applicationBuilder.UseHttpsRedirection();
