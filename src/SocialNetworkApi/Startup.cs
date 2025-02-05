@@ -8,7 +8,7 @@ using SocialNetworkApi.BackgroundServices;
 using SocialNetworkApi.Extensions;
 using SocialNetworkApi.Hubs;
 using SocialNetworkApi.Interceptors;
-using SocialNetworkApi.Logs;
+//using SocialNetworkApi.Logs;
 using SocialNetworkApi.Middlewares;
 
 namespace SocialNetworkApi;
