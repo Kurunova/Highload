@@ -2,13 +2,10 @@
 using Serilog;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
-// using SocialNetwork.Dialog.DataAccess.Extensions;
-// using SocialNetwork.Dialog.Extensions;
 using SocialNetworkApi.BackgroundServices;
 using SocialNetworkApi.Extensions;
 using SocialNetworkApi.Hubs;
 using SocialNetworkApi.Interceptors;
-using SocialNetworkApi.Logs;
 using SocialNetworkApi.Middlewares;
 
 namespace SocialNetworkApi;
