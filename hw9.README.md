@@ -34,6 +34,8 @@ docker exec -it test-runner sh -c 'PGPASSWORD="!QAZ2wsx" pgbench -h haproxy -p 5
 docker exec -it test-runner sh -c 'PGPASSWORD="!QAZ2wsx" pgbench -h haproxy -p 5432 -U postgres_user -d socialnetwork -c 10 -T 60 -f /test_insert.sql'
 docker exec -it test-runner sh -c 'PGPASSWORD="!QAZ2wsx" pgbench -h haproxy -p 5432 -U postgres_user -d socialnetwork -c 10 -T 60 -f /test_update.sql'
 ```
+-c - количество одновременных соединений
+-T - время выполнения теста
 
 ### Тестирование DB
 
