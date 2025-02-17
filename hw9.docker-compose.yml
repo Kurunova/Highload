@@ -93,6 +93,20 @@ services:
     networks:
       - sn-network
 
+  test-runner:
+    image: postgres:latest
+    container_name: test-runner
+    networks:
+      - sn-network
+    depends_on:
+      - haproxy
+      #- nginx
+    tty: true
+    stdin_open: true
+    command: ["/bin/sh"]
+    volumes:
+      - ./docker-settings/tests/test.sql:/test.sql
+
   socialnetwork-dbmigrator-1:
     build:
       context: ./src
