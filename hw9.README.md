@@ -31,7 +31,7 @@ apk add --no-cache postgresql-client
 ```
 
 Если ab не установлен внутри контейнера, его можно установить:
-```shell
+```shell[Dockerfile.TestRunner](docker-settings%2FDockerfile.TestRunner)
 apk add --no-cache apache2-utils
 ```
 
@@ -70,10 +70,8 @@ docker start socialnetwork-db-replica-1
 
 Можно использовать ab (Apache Benchmark) или wrk для генерации запросов:
 ```shell
-ab -n 1000 -c 10 http://localhost:8080/
 docker exec -it test-runner ab -n 1000 -c 10 http://nginx/
-
-wrk -t4 -c10 -d60s http://localhost:8080/
+docker exec -it test-runner wrk -t10 -c10 -d60s http://nginx/
 ```
 
 ### Тестирование API
@@ -92,8 +90,6 @@ docker logs nginx
 ```shell
 docker start socialnetwork-api-1
 ```
-
-
 
 -----------
 Для отладки

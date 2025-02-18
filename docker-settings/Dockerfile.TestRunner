@@ -1,0 +1,7 @@
+FROM postgres:15-bullseye
+
+RUN apt-get update && apt-get install -y apache2-utils && apt install -y wrk
+
+WORKDIR /tests
+
+CMD ["/bin/bash"]
