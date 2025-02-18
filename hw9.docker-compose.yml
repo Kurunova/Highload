@@ -148,7 +148,8 @@ services:
     volumes:
       - ./docker-settings/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     ports:
-      - "5410:5432"
+      - "5410:5432"  # Проксирование PostgreSQL
+      - "8404:8404"  # Проксирование статистики HAProxy
     depends_on:
       - socialnetwork-db-replica-1
       - socialnetwork-db-replica-2

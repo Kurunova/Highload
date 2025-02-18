@@ -4,23 +4,33 @@
 docker-compose -f hw9.docker-compose.yml up -d --build --force-recreate
 ```
 
+Connect to DB:
+- localhost:5400
+- postgres_user:!QAZ2wsx
+Grafana: http://localhost:3000/
+- admin:!QAZ2wsx
+Haproxy stats: http://localhost:8404/stats
+
+Проверить что бд доступна через DBeaver, подключиться к порту 5410 и выполнить
+```sql
+select count(*)
+FROM public.users
+order by 1 desc;
+```
+
 ## Контейнер для тестов test-runner
 
 Войти в контейнер
-
 ```shell
 docker exec -it test-runner bash
-docker exec -it test-runner sh
 ```
 
 Если pgbench не установлен внутри контейнера, его можно установить:
-
 ```shell
 apk add --no-cache postgresql-client
 ```
 
 Если ab не установлен внутри контейнера, его можно установить:
-
 ```shell
 apk add --no-cache apache2-utils
 ```
@@ -29,10 +39,10 @@ apk add --no-cache apache2-utils
 
 ### Нагрузка на DB
 
+Запустить тест
+
 ```shell
 docker exec -it test-runner sh -c 'PGPASSWORD="!QAZ2wsx" pgbench -h haproxy -p 5432 -U postgres_user -d socialnetwork -c 10 -T 60 -f /test.sql'
-docker exec -it test-runner sh -c 'PGPASSWORD="!QAZ2wsx" pgbench -h haproxy -p 5432 -U postgres_user -d socialnetwork -c 10 -T 60 -f /test_insert.sql'
-docker exec -it test-runner sh -c 'PGPASSWORD="!QAZ2wsx" pgbench -h haproxy -p 5432 -U postgres_user -d socialnetwork -c 10 -T 60 -f /test_update.sql'
 ```
 -c - количество одновременных соединений
 -T - время выполнения теста
