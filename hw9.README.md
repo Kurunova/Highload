@@ -42,7 +42,7 @@ apk add --no-cache apache2-utils
 Запустить тест
 
 ```shell
-docker exec -it test-runner sh -c 'PGPASSWORD="!QAZ2wsx" pgbench -h haproxy -p 5432 -U postgres_user -d socialnetwork -c 10 -T 60 -f /test.sql'
+docker exec -it test-runner sh -c 'PGPASSWORD="!QAZ2wsx" pgbench -h haproxy -p 5432 -U postgres_user -d socialnetwork -c 50 -j 4 -T 60 -f /test.sql'
 ```
 -c - количество одновременных соединений
 -T - время выполнения теста
