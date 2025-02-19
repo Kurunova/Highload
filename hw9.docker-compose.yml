@@ -69,7 +69,6 @@ services:
       - citus-coordinator
       - rabbitmq
       - redis
-      - tarantool-db
     environment:
       - HTTP_PORT=8080
       - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
@@ -115,13 +114,14 @@ services:
     container_name: socialnetwork-api-2
     depends_on:
       - socialnetwork-db-master
-      - haproxy
+      - citus-coordinator
       - rabbitmq
       - redis
     environment:
       - HTTP_PORT=8080
       - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - DatabaseSettings__ReplicaConnectionString=Server=haproxy;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DialogService__GrpcConnectionString=http://socialnetwork-dialog-grpc-1:6000/
       - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
       - Jwt__Issuer=socialnetwork.com
       - Jwt__Audience=socialnetwork.com
@@ -131,6 +131,15 @@ services:
       - RabbitMQ__HostName=rabbitmq
       - RabbitMQ__UserName=guest
       - RabbitMQ__Password=guest
+      - RabbitMQ__Exchange=PostFeedExchange
+      - RabbitMQ__Queue=PostFeedQueue
+      - RabbitMQ__RoutingKeyPrefix=feed.user.
+      - Serilog__Using__0=Serilog.Sinks.Console
+      - Serilog__MinimumLevel=Debug
+      - Serilog__WriteTo__0__Name=Console
+      - Serilog__WriteTo__0__Args__outputTemplate={Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Properties} {Message:lj}{NewLine}{Exception}
+    ports:
+      - "5002:8080"
     networks:
       - sn-network
     deploy:
@@ -177,7 +186,7 @@ services:
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console
     ports:
-      - "5002:8080"
+      - "5010:8080"
     networks:
       - sn-network
 
