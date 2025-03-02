@@ -29,6 +29,7 @@
     <ItemGroup>
         <Protobuf Include="Protos/v1/dialog.proto" GrpcServices="Server" />
         <Protobuf Include="Protos/v2/dialog.proto" GrpcServices="Server" />
+        <Protobuf Include="Protos/v3/dialog.proto" GrpcServices="Server" />
     </ItemGroup>
 
 </Project>

@@ -115,4 +115,22 @@ public class DialogRepositoryTarantool : IDialogRepository
 			throw;
 		}
 	}
+	
+	public async Task<bool> UpdateMessageReadStatusAsync(long messageId, bool isRead, CancellationToken cancellationToken)
+	{
+		try
+		{
+			var result = await Box.Call<TarantoolTuple<long, bool>, TarantoolTuple<long, bool>>(
+				"mark_message_as_read",
+				new TarantoolTuple<long, bool>(messageId, isRead)
+			);
+
+			return result.Data.Length > 0;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error while updating message read status in Tarantool");
+			throw;
+		}
+	}
 }

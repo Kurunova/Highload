@@ -51,7 +51,14 @@ public sealed class Startup
 				options.Address = new Uri(dialogServiceAddress);
 			})
 			.AddInterceptor<RequestIdInterceptor>();
-		
+		serviceCollection.AddGrpcClient<SocialNetwork.Dialog.Grpc.V3.GrpcDialogService.GrpcDialogServiceClient>(
+				"GrpcDialogServiceClientV3", 
+				options =>
+				{
+					options.Address = new Uri(dialogServiceAddress);
+				})
+			.AddInterceptor<RequestIdInterceptor>();
+
 		serviceCollection.AddHttpContextAccessor();
 		
 		serviceCollection.AddControllers();

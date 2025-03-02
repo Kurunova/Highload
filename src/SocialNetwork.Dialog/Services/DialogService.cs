@@ -30,4 +30,9 @@ public class DialogService : IDialogService
 	{
 		return await _dialogRepository.GetMessagesBetweenUsersAsync(userId1, userId2, cancellationToken);
 	}
+
+	public async Task<bool> MarkMessageAsReadAsync(long messageId, bool isRead, CancellationToken cancellationToken)
+	{
+		return await _dialogRepository.UpdateMessageReadStatusAsync(messageId, isRead, cancellationToken);
+	}
 }

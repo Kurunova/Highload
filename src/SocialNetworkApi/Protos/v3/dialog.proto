@@ -1,0 +1,48 @@
+syntax = "proto3";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "SocialNetwork.Dialog.Grpc.V3";
+
+package dialog.v3;
+
+service GrpcDialogService {
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse);
+  rpc MarkMessageAsRead(MarkMessageAsReadRequest) returns (MarkMessageAsReadResponse);
+}
+
+message SendMessageRequest {
+  int64 senderId = 1;
+  int64 recipientId = 2;
+  string text = 3;
+}
+
+message SendMessageResponse {
+  bool success = 1;
+}
+
+message GetMessagesRequest {
+  int64 userId1 = 1;
+  int64 userId2 = 2;
+}
+
+message GetMessagesResponse {
+  repeated Message messages = 1;
+}
+
+message Message {
+  int64 from = 1;
+  int64 to = 2;
+  string text = 3;
+  google.protobuf.Timestamp sentAt = 4;
+}
+
+message MarkMessageAsReadRequest {
+  int64 messageId = 1;
+  bool isRead = 2;
+}
+
+message MarkMessageAsReadResponse {
+  bool success = 1;
+}

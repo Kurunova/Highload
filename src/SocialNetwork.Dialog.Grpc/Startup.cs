@@ -40,6 +40,7 @@ public sealed class Startup
 		{
 			endpointRouteBuilder.MapGrpcService<DialogServiceControllerV1>();
 			endpointRouteBuilder.MapGrpcService<DialogServiceControllerV2>();
+			endpointRouteBuilder.MapGrpcService<DialogServiceControllerV3>();
 			endpointRouteBuilder.MapGrpcReflectionService();
 			endpointRouteBuilder.MapGet("", () => "Hello Wold!");
 		});

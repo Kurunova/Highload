@@ -41,4 +41,12 @@ public class DialogRepository : BaseRepository, IDialogRepository
 
 		return await QueryAsync<DialogMessage>(sql, new { DialogId = dialogId }, cancellationToken);
 	}
+	
+	public async Task<bool> UpdateMessageReadStatusAsync(long messageId, bool isRead, CancellationToken cancellationToken)
+	{
+		const string sql = "UPDATE dialog_messages SET is_read = @IsRead WHERE id = @MessageId";
+		var parameters = new { MessageId = messageId, IsRead = isRead };
+
+		return await ExecuteAsync(sql, parameters, cancellationToken);
+	}
 }
