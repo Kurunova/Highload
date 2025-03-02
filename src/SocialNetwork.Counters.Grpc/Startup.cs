@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using SocialNetwork.Counters.Grpc.DataAccess;
 using SocialNetwork.Counters.Grpc.Services;
 
 namespace SocialNetwork.Counters.Grpc;
@@ -19,7 +20,7 @@ public class Startup
 
 	public void ConfigureServices(IServiceCollection serviceCollection)
 	{
-		// serviceCollection.AddCountersDatabase(_configuration);
+		serviceCollection.AddCountersDatabase(_configuration);
 		// serviceCollection.AddCounters(_configuration);
 		
 		serviceCollection.AddGrpc(options =>

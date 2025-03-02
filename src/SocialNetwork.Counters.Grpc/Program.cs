@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 using SocialNetwork.Counters.Grpc;
 using SocialNetwork.Counters.Grpc.Configurations;
+using SocialNetwork.DataAccess.Extensions;
 
 await Host
 	.CreateDefaultBuilder(args)
@@ -16,4 +17,4 @@ await Host
 		}))
 	.UseSerilog()
 	.Build()
-	.RunAsync();
+	.RunOrMigrate(Environment.GetEnvironmentVariable(EnvironmentVariableConstants.RUN_OPTIONS));

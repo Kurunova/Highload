@@ -153,13 +153,34 @@ services:
       context: ./src
       dockerfile: SocialNetwork.Counters.Grpc/Dockerfile
     container_name: socialnetwork-counters-grpc-1
+    depends_on:
+      - socialnetwork-db-master
     environment:
       - GRPC_PORT=6000
+      - DatabaseSettings__ConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - Serilog__Using__0=Serilog.Sinks.Console
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console
     ports:
       - "6021:6000"
+    networks:
+      - sn-network
+
+  socialnetwork-counters-grpc-dbmigrator-1:
+    build:
+      context: ./src
+      dockerfile: SocialNetwork.Counters.Grpc/Dockerfile
+    container_name: socialnetwork-counters-grpc-dbmigrator-1
+    depends_on:
+      - socialnetwork-db-master
+    environment:
+      - RUN_OPTIONS=migrateUp
+      - DatabaseSettings__ConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - Serilog__Using__0=Serilog.Sinks.Console
+      - Serilog__MinimumLevel=Debug
+      - Serilog__WriteTo__0__Name=Console
+    ports:
+      - "5020:8080"
     networks:
       - sn-network
 

@@ -8,6 +8,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "GRPC_PORT": "5072",
+        //"RUN_OPTIONS": "migrateUp",
+        "DatabaseSettings__ConnectionString": "Server=localhost;Port=5400;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true",
         "Serilog__Using__0": "Serilog.Sinks.Console",
         "Serilog__MinimumLevel": "Debug",
         "Serilog__WriteTo__0__Name": "Console"

@@ -1,5 +1,5 @@
-using System.Collections.Concurrent;
 using Grpc.Core;
+using SocialNetwork.Counters.Grpc.Domain;
 using SocialNetwork.Counters.Grpc.V1;
 
 namespace SocialNetwork.Counters.Grpc.Services;
@@ -7,34 +7,38 @@ namespace SocialNetwork.Counters.Grpc.Services;
 public class CountersServiceControllerV1 : GrpcCounterService.GrpcCounterServiceBase
 {
 	private readonly ILogger<CountersServiceControllerV1> _logger;
-	private static readonly ConcurrentDictionary<long, int> UnreadMessageCounters = new();
+	private readonly ICountersRepository _countersRepository;
 
-	public CountersServiceControllerV1(ILogger<CountersServiceControllerV1> logger)
+	public CountersServiceControllerV1(ILogger<CountersServiceControllerV1> logger, ICountersRepository countersRepository)
 	{
 		_logger = logger;
+		_countersRepository = countersRepository;
 	}
 
-	public override Task<GetUnreadMessagesResponse> GetUnreadMessagesCount(GetUnreadMessagesRequest request, ServerCallContext context)
+	public override async Task<GetUnreadMessagesResponse> GetUnreadMessagesCount(GetUnreadMessagesRequest request, ServerCallContext context)
 	{
 		_logger.LogInformation($"Get unread count for User {request.UserId}");
-		UnreadMessageCounters.TryGetValue(request.UserId, out int count);
 
-		return Task.FromResult(new GetUnreadMessagesResponse { Count = count });
+		var count = await _countersRepository.GetUnreadMessagesCountAsync(request.UserId, context.CancellationToken);
+
+		return new GetUnreadMessagesResponse { Count = count };
 	}
 	
-	public override Task<IncrementUnreadMessagesCountResponse> IncrementUnreadMessagesCount(IncrementUnreadMessagesCountRequest request, ServerCallContext context)
+	public override async Task<IncrementUnreadMessagesCountResponse> IncrementUnreadMessagesCount(IncrementUnreadMessagesCountRequest request, ServerCallContext context)
 	{
 		_logger.LogInformation($"Set unread count: User {request.UserId} -> {request.Count}");
-		UnreadMessageCounters[request.UserId] = request.Count;
-	
-		return Task.FromResult(new IncrementUnreadMessagesCountResponse { Success = true });
+
+		await _countersRepository.IncrementUnreadMessagesCountAsync(request.UserId, request.Count, context.CancellationToken);
+		
+		return new IncrementUnreadMessagesCountResponse { Success = true };
 	}
 	
-	public override Task<DecrementUnreadMessagesCountResponse> DecrementUnreadMessagesCount(DecrementUnreadMessagesCountRequest request, ServerCallContext context)
+	public override async Task<DecrementUnreadMessagesCountResponse> DecrementUnreadMessagesCount(DecrementUnreadMessagesCountRequest request, ServerCallContext context)
 	{
 		_logger.LogInformation($"Set unread count: User {request.UserId} -> {request.Count}");
-		UnreadMessageCounters[request.UserId] = request.Count;
+		
+		await _countersRepository.DecrementUnreadMessagesCountAsync(request.UserId, request.Count, context.CancellationToken);
 	
-		return Task.FromResult(new DecrementUnreadMessagesCountResponse { Success = true });
+		return new DecrementUnreadMessagesCountResponse { Success = true };
 	}
 }
