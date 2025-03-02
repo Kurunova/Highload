@@ -91,7 +91,7 @@ public class DialogRepositoryTarantool : IDialogRepository
 			// );
 			// var dialogMessagesTuple = dataResponse.Data[0];
 			
-			var dataResponse = await Box.Call<TarantoolTuple<string, int, int>, TarantoolTuple<long, string, long, long, string, string>[]>(
+			var dataResponse = await Box.Call<TarantoolTuple<string, int, int>, TarantoolTuple<long, string, long, long, string, string, bool>[]>(
 				"get_dialog_messages_paginated",
 				new TarantoolTuple<string, int, int>(dialogId, 100, 0)
 			);
@@ -99,12 +99,14 @@ public class DialogRepositoryTarantool : IDialogRepository
 			
 			var result = dialogMessagesTuple.Select(p => new DialogMessage
 			{
+				MessageId = p.Item1,
 				From = p.Item3,
 				To = p.Item4,
 				Text = p.Item5,
 				SentAt = DateTime.TryParse(p.Item6, null, DateTimeStyles.RoundtripKind, out DateTime parsedDt)
 					? parsedDt
-					: DateTime.MinValue
+					: DateTime.MinValue,
+				IsRead = p.Item7
 			});
 
 			return result;
@@ -112,6 +114,38 @@ public class DialogRepositoryTarantool : IDialogRepository
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Error while retrieving messages from Tarantool");
+			throw;
+		}
+	}
+	
+	public async Task<DialogMessage?> GetMessageByIdAsync(long messageId, CancellationToken cancellationToken)
+	{
+		try
+		{
+			var dataResponse = await Box.Call<TarantoolTuple<long>, TarantoolTuple<long, string, long, long, string, string, bool>[]>(
+				"get_message_by_id",
+				new TarantoolTuple<long>(messageId)
+			);
+
+			var dialogMessagesTuple = dataResponse.Data[0];
+			
+			var messages = dialogMessagesTuple.Select(p => new DialogMessage
+			{
+				MessageId = p.Item1,
+				From = p.Item3,
+				To = p.Item4,
+				Text = p.Item5,
+				SentAt = DateTime.TryParse(p.Item6, null, DateTimeStyles.RoundtripKind, out DateTime parsedDt)
+					? parsedDt
+					: DateTime.MinValue,
+				IsRead = p.Item7
+			});
+
+			return messages.FirstOrDefault();
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error while retrieving message from Tarantool");
 			throw;
 		}
 	}

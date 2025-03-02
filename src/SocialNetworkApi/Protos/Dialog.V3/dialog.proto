@@ -9,6 +9,7 @@ package dialog.v3;
 service GrpcDialogService {
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
   rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse);
+  rpc GetMessageById(GetMessageByIdRequest) returns (GetMessageByIdResponse);
   rpc MarkMessageAsRead(MarkMessageAsReadRequest) returns (MarkMessageAsReadResponse);
 }
 
@@ -31,11 +32,21 @@ message GetMessagesResponse {
   repeated Message messages = 1;
 }
 
+message GetMessageByIdRequest {
+  int64 messageId = 1;
+}
+
+message GetMessageByIdResponse {
+  Message message = 1;
+}
+
 message Message {
-  int64 from = 1;
-  int64 to = 2;
-  string text = 3;
-  google.protobuf.Timestamp sentAt = 4;
+  int64 messageId = 1;
+  int64 from = 2;
+  int64 to = 3;
+  string text = 4;
+  google.protobuf.Timestamp sentAt = 5;
+  bool isRead = 6;
 }
 
 message MarkMessageAsReadRequest { 

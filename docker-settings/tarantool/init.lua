@@ -74,6 +74,11 @@ function get_dialog_messages_paginated(dialog_id, limit, offset)
     )
 end
 
+-- Функция получения сообщения по ид
+function get_message_by_id(message_id)
+    return box.space.dialog_messages:get(message_id)
+end
+
 -- Функция обновления статуса "прочитано"
 function mark_message_as_read(message_id, is_read)
     local message = box.space.dialog_messages:get{message_id}
@@ -89,6 +94,7 @@ end
 box.schema.func.create('add_dialog_message', {if_not_exists = true})
 box.schema.func.create('get_dialog_messages', {if_not_exists = true})
 box.schema.func.create('get_dialog_messages_paginated', {if_not_exists = true})
+box.schema.func.create('get_message_by_id', {if_not_exists = true})
 box.schema.func.create('mark_message_as_read', {if_not_exists = true})
 
 print("Tarantool instance is configured and running!")

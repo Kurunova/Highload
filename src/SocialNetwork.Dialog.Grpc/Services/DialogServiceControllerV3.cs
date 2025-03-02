@@ -39,12 +39,39 @@ public class DialogServiceControllerV3 : GrpcDialogService.GrpcDialogServiceBase
 		var response = new GetMessagesResponse();
 		response.Messages.AddRange(messages.Select(p => new Message
 		{
+			MessageId = p.MessageId,
 			From = p.From,
 			To = p.To,
 			Text = p.Text,
-			SentAt = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow)
+			SentAt = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow),
+			IsRead = p.IsRead
 		}));
 		return response;
+	}
+	
+	public override async Task<GetMessageByIdResponse> GetMessageById(GetMessageByIdRequest request, ServerCallContext context)
+	{
+		var xRequestId = context.RequestHeaders.GetValue("X-Request-ID");
+		_logger.LogInformation($"GrpcDialogService:V3:GetMessageById: X-Request-ID {xRequestId}, request {JsonSerializer.Serialize(request)}");
+
+		var message = await _dialogService.GetMessageByIdAsync(request.MessageId, context.CancellationToken);
+		if (message == null)
+		{
+			throw new RpcException(new Status(StatusCode.NotFound, "Message not found"));
+		}
+
+		return new GetMessageByIdResponse
+		{
+			Message = new Message
+			{
+				MessageId = message.MessageId,
+				From = message.From,
+				To = message.To,
+				Text = message.Text,
+				SentAt = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(message.SentAt.ToUniversalTime()),
+				IsRead = message.IsRead
+			}
+		};
 	}
 	
 	public override async Task<MarkMessageAsReadResponse> MarkMessageAsRead(MarkMessageAsReadRequest request, ServerCallContext context)

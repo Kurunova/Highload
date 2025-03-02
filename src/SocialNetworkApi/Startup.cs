@@ -58,7 +58,16 @@ public sealed class Startup
 					options.Address = new Uri(dialogServiceAddress);
 				})
 			.AddInterceptor<RequestIdInterceptor>();
-
+		
+		var countersServiceAddress = _configuration.GetValue<string>("CountersService:GrpcConnectionString");
+		serviceCollection.AddGrpcClient<SocialNetwork.Counters.Grpc.V1.GrpcCounterService.GrpcCounterServiceClient>(
+				"GrpcCounterServiceClientV1", 
+				options =>
+				{
+					options.Address = new Uri(countersServiceAddress);
+				})
+			.AddInterceptor<RequestIdInterceptor>();
+		
 		serviceCollection.AddHttpContextAccessor();
 		
 		serviceCollection.AddControllers();

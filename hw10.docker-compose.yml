@@ -148,6 +148,21 @@ services:
           cpus: "4"
           memory: "2G"
 
+  socialnetwork-counters-grpc-1:
+    build:
+      context: ./src
+      dockerfile: SocialNetwork.Counters.Grpc/Dockerfile
+    container_name: socialnetwork-counters-grpc-1
+    environment:
+      - GRPC_PORT=6000
+      - Serilog__Using__0=Serilog.Sinks.Console
+      - Serilog__MinimumLevel=Debug
+      - Serilog__WriteTo__0__Name=Console
+    ports:
+      - "6021:6000"
+    networks:
+      - sn-network
+
   socialnetwork-dialog-grpc-1:
     build:
       context: ./src

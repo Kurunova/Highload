@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Dialog.Grpc",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Dialog", "src\SocialNetwork.Dialog\SocialNetwork.Dialog.csproj", "{821E5838-07F7-4802-A073-8F8489AA5B98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork.Counters.Grpc", "src\SocialNetwork.Counters.Grpc\SocialNetwork.Counters.Grpc.csproj", "{794805EA-B284-4533-A4F9-B7D17596D114}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{821E5838-07F7-4802-A073-8F8489AA5B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{821E5838-07F7-4802-A073-8F8489AA5B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{821E5838-07F7-4802-A073-8F8489AA5B98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{794805EA-B284-4533-A4F9-B7D17596D114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{794805EA-B284-4533-A4F9-B7D17596D114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{794805EA-B284-4533-A4F9-B7D17596D114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{794805EA-B284-4533-A4F9-B7D17596D114}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AEC279F3-C019-470D-9615-01B4D2DAF7D0} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
@@ -93,5 +99,6 @@ Global
 		{383E30C8-DF8D-45AA-BCA6-B5F914A29FC3} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 		{48D6ED16-D2F2-4A24-B42B-A338C240D457} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 		{821E5838-07F7-4802-A073-8F8489AA5B98} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
+		{794805EA-B284-4533-A4F9-B7D17596D114} = {AAEA1F2A-8135-48E2-AF3D-2C93B6EE8F8A}
 	EndGlobalSection
 EndGlobal
