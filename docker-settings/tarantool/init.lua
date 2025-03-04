@@ -4,7 +4,7 @@ box.cfg{
 
 -- Инициализация последовательности
 if not box.sequence.dialog_messages_seq then
-    box.schema.sequence.create('dialog_messages_seq', {min = 1, start = 1, if_not_exists = true})q
+    box.schema.sequence.create('dialog_messages_seq', {min = 1, start = 1, if_not_exists = true})
 end
 
 -- Инициализация пространства, если это не сделано
@@ -17,6 +17,7 @@ if not box.space.dialog_messages then
             {name = 'to_user_id', type = 'unsigned'},
             {name = 'text', type = 'string'},
             {name = 'sent_at', type = 'string'},
+            {name = 'is_read', type = 'boolean', default = false}
         }
     })
     -- Создаем составной первичный ключ (dialog_id, id)
@@ -32,8 +33,17 @@ if not box.space.dialog_messages then
         unique = false,
         if_not_exists = true
     })
-else
-    -- Если пространство уже существует, обновляем его формат
+end
+
+if box.space.dialog_messages then
+    -- Обновление старых записей: добавляем is_read = false, если его нет
+    for _, tuple in box.space.dialog_messages:pairs() do
+        if tuple[7] == nil then -- Поле is_read отсутствует (7-й индекс в кортеже)
+            box.space.dialog_messages:update(tuple[1], {{'=', 7, false}})
+        end
+    end
+
+    -- Теперь можно безопасно обновить формат
     box.space.dialog_messages:format({
         {name = 'id', type = 'unsigned'},
         {name = 'dialog_id', type = 'string'},
@@ -43,13 +53,6 @@ else
         {name = 'sent_at', type = 'string'},
         {name = 'is_read', type = 'boolean', default = false}
     })
-end
-
--- Обновление старых записей: добавление is_read = false, если его нет
-for _, tuple in box.space.dialog_messages:pairs() do
-    if tuple.is_read == nil then
-        box.space.dialog_messages:update(tuple.id, {{'=', 'is_read', false}})
-    end
 end
 
 -- Функция добавления сообщения

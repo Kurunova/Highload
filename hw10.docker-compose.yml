@@ -81,6 +81,7 @@ services:
       #      - DialogDbSettings__TarantoolDbSettings__Port=3301
       #      - DialogDbSettings__TarantoolDbSettings__SpaceName=dialog_messages
       - DialogService__GrpcConnectionString=http://socialnetwork-dialog-grpc-1:6000/
+      - CountersService__GrpcConnectionString=http://socialnetwork-counters-grpc-1:6000/
       - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
       - Jwt__Issuer=socialnetwork.com
       - Jwt__Audience=socialnetwork.com
@@ -122,6 +123,7 @@ services:
       - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - DatabaseSettings__ReplicaConnectionString=Server=haproxy;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
       - DialogService__GrpcConnectionString=http://socialnetwork-dialog-grpc-1:6000/
+      - CountersService__GrpcConnectionString=http://socialnetwork-counters-grpc-1:6000/
       - Jwt__Key=vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=
       - Jwt__Issuer=socialnetwork.com
       - Jwt__Audience=socialnetwork.com

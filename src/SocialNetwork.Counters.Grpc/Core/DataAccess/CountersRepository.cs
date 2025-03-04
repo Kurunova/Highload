@@ -9,11 +9,14 @@ public class CountersRepository : ICountersRepository
 {
 	private readonly ILogger<CountersRepository> _logger;
     private readonly string _connectionString;
+    private readonly string _schema;
 
     public CountersRepository(ILogger<CountersRepository> logger, IOptions<DatabaseSettings> databaseSettings)
     {
         _logger = logger;
         _connectionString = databaseSettings.Value.ConnectionString;
+        _schema = databaseSettings.Value.Schema;
+        _connectionString = $"{_connectionString.TrimEnd(';')};SearchPath={_schema}";
     }
 
     private NpgsqlConnection CreateConnection() => new NpgsqlConnection(_connectionString);
@@ -59,6 +62,7 @@ public class CountersRepository : ICountersRepository
             WHERE user_id = @UserId AND unread_count > 0";
 
         await using var connection = CreateConnection();
+        using var command = connection.CreateCommand();
         var affectedRows = await connection.ExecuteAsync(sql, new { UserId = userId, Count = count });
 
         if (affectedRows > 0)

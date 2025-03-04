@@ -60,7 +60,7 @@ public class DialogRepositoryTarantool : IDialogRepository
 
 		try
 		{
-			await Box.Call<TarantoolTuple<string, long, long, string, string>, TarantoolTuple<long, string, long, long, string, string>>(
+			await Box.Call<TarantoolTuple<string, long, long, string, string>, TarantoolTuple<long, string, long, long, string, string, bool>>(
 				"add_dialog_message",
 				new TarantoolTuple<string, long, long, string, string>(
 					dialogId, message.From,  message.To, message.Text, message.SentAt.ToUniversalTime().ToString("O") 
@@ -122,26 +122,37 @@ public class DialogRepositoryTarantool : IDialogRepository
 	{
 		try
 		{
-			var dataResponse = await Box.Call<TarantoolTuple<long>, TarantoolTuple<long, string, long, long, string, string, bool>[]>(
+			var dataResponse = await Box.Call<TarantoolTuple<long>, TarantoolTuple<long, string, long, long, string, string, bool>>(
 				"get_message_by_id",
 				new TarantoolTuple<long>(messageId)
 			);
 
 			var dialogMessagesTuple = dataResponse.Data[0];
-			
-			var messages = dialogMessagesTuple.Select(p => new DialogMessage
+
+			// var result = dialogMessagesTuple.Select(p => new DialogMessage
+			// {
+			// 	MessageId = p.Item1,
+			// 	From = p.Item3,
+			// 	To = p.Item4,
+			// 	Text = p.Item5,
+			// 	SentAt = DateTime.TryParse(p.Item6, null, DateTimeStyles.RoundtripKind, out DateTime parsedDt)
+			// 		? parsedDt
+			// 		: DateTime.MinValue,
+			// 	IsRead = p.Item7
+			// }).FirstOrDefault();
+			var result = new DialogMessage
 			{
-				MessageId = p.Item1,
-				From = p.Item3,
-				To = p.Item4,
-				Text = p.Item5,
-				SentAt = DateTime.TryParse(p.Item6, null, DateTimeStyles.RoundtripKind, out DateTime parsedDt)
+				MessageId = dialogMessagesTuple.Item1,
+				From = dialogMessagesTuple.Item3,
+				To = dialogMessagesTuple.Item4,
+				Text = dialogMessagesTuple.Item5,
+				SentAt = DateTime.TryParse(dialogMessagesTuple.Item6, null, DateTimeStyles.RoundtripKind, out DateTime parsedDt)
 					? parsedDt
 					: DateTime.MinValue,
-				IsRead = p.Item7
-			});
-
-			return messages.FirstOrDefault();
+				IsRead = dialogMessagesTuple.Item7
+			};
+			
+			return result;
 		}
 		catch (Exception ex)
 		{
@@ -154,7 +165,7 @@ public class DialogRepositoryTarantool : IDialogRepository
 	{
 		try
 		{
-			var result = await Box.Call<TarantoolTuple<long, bool>, TarantoolTuple<long, bool>>(
+			var result = await Box.Call<TarantoolTuple<long, bool>, TarantoolTuple<bool>>(
 				"mark_message_as_read",
 				new TarantoolTuple<long, bool>(messageId, isRead)
 			);
