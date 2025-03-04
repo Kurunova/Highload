@@ -1,0 +1,39 @@
+syntax = "proto3";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "SocialNetwork.Counters.Grpc.V1";
+
+package counters.v1;
+
+service GrpcCounterService {
+  rpc GetUnreadMessagesCount(GetUnreadMessagesRequest) returns (GetUnreadMessagesResponse);
+  rpc IncrementUnreadMessagesCount(IncrementUnreadMessagesCountRequest) returns (IncrementUnreadMessagesCountResponse);
+  rpc DecrementUnreadMessagesCount(DecrementUnreadMessagesCountRequest) returns (DecrementUnreadMessagesCountResponse);
+}
+
+message GetUnreadMessagesRequest {
+  int64 userId = 1;
+}
+
+message GetUnreadMessagesResponse {
+  int32 count = 1;
+}
+
+message IncrementUnreadMessagesCountRequest {
+  int64 userId = 1;
+  int32 count = 2;
+}
+
+message IncrementUnreadMessagesCountResponse {
+  bool success = 1;
+}
+
+message DecrementUnreadMessagesCountRequest {
+  int64 userId = 1;
+  int32 count = 2;
+}
+
+message DecrementUnreadMessagesCountResponse {
+  bool success = 1;
+}

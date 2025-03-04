@@ -8,28 +8,26 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Dapper" Version="2.1.35" />
+        <PackageReference Include="FluentMigrator" Version="5.2.0" />
+        <PackageReference Include="FluentMigrator.Runner" Version="5.2.0" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.49.0"/>
         <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.67.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+        <PackageReference Include="Npgsql" Version="8.0.2" />
         <PackageReference Include="Serilog" Version="3.1.1" />
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
-
+    
+    <ItemGroup>
+        <Protobuf Include="Protos\Counters.V1\counters.proto" GrpcServices="Server" />
+    </ItemGroup>
+    
     <ItemGroup>
       <Content Include="..\..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\SocialNetwork.Dialog.DataAccess\SocialNetwork.Dialog.DataAccess.csproj" />
-      <ProjectReference Include="..\SocialNetwork.Dialog\SocialNetwork.Dialog.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Protobuf Include="Protos\Dialog.V1\dialog.proto" GrpcServices="Server" />
-        <Protobuf Include="Protos\Dialog.V2\dialog.proto" GrpcServices="Server" />
-        <Protobuf Include="Protos\Dialog.V3\dialog.proto" GrpcServices="Server" />
     </ItemGroup>
 
 </Project>
