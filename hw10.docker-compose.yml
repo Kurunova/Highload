@@ -158,6 +158,7 @@ services:
     environment:
       - GRPC_PORT=6000
       - DatabaseSettings__ConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DatabaseSettings__Schema=schema_counters
       - Serilog__Using__0=Serilog.Sinks.Console
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console
@@ -176,6 +177,7 @@ services:
     environment:
       - RUN_OPTIONS=migrateUp
       - DatabaseSettings__ConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
+      - DatabaseSettings__Schema=schema_counters
       - Serilog__Using__0=Serilog.Sinks.Console
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console
