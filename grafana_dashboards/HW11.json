@@ -314,8 +314,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "HTTP Requests per Second",
+  "title": "RED Business Metrics",
   "uid": "cefbp3qb67d34d",
-  "version": 5,
+  "version": 6,
   "weekStart": ""
 }
