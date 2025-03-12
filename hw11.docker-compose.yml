@@ -71,6 +71,9 @@ services:
       - citus-coordinator
       - rabbitmq
       - redis
+      - zabbix-server
+    volumes:
+      - ./docker-settings/zabbix/zabbix_agentd.conf:/etc/zabbix/zabbix_agentd.conf
     environment:
       - HTTP_PORT=8080
       - DatabaseSettings__MasterConnectionString=Server=socialnetwork-db-master;Port=5432;Database=socialnetwork;User ID=postgres_user;Password=!QAZ2wsx;No Reset On Close=true; Include Error Detail=true
@@ -100,8 +103,15 @@ services:
       - Serilog__MinimumLevel=Debug
       - Serilog__WriteTo__0__Name=Console
       - Serilog__WriteTo__0__Args__outputTemplate={Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Properties} {Message:lj}{NewLine}{Exception}
+      - ZBX_HOSTNAME=socialnetwork-api-1
+      - ZBX_SERVER=zabbix-server
+      - ZBX_SERVER_ACTIVE=zabbix-server
+      - ZBX_LISTENPORT=10050
+      - ZBX_LISTENIP=0.0.0.0
+      - ZBX_ALLOWROOT="1"
     ports:
       - "5001:8080"
+      - "10050:10050"
     networks:
       - sn-network
     deploy:
@@ -579,25 +589,23 @@ services:
       - "3000:3000"
     networks:
       - sn-network
-
-  zabbix-db:
-    image: mysql:8.0
-    container_name: zabbix-db
+ 
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-mysql:latest
+    container_name: zabbix-web
+    depends_on:
+      - zabbix-server
     environment:
+      ZBX_SERVER_HOST: zabbix-server
+      DB_SERVER_HOST: zabbix-db
       MYSQL_DATABASE: zabbix
       MYSQL_USER: admin
       MYSQL_PASSWORD: "!QAZ2wsx"
-      MYSQL_ROOT_PASSWORD: root_pass
-    command: [
-      "--character-set-server=utf8mb4",
-      "--collation-server=utf8mb4_bin",
-      "--log-bin-trust-function-creators=1"
-    ]
-    volumes:
-      - zabbix-db-data:/var/lib/mysql
+    ports:
+      - "9091:8080"
     networks:
       - sn-network
-  
+
   zabbix-server:
     image: zabbix/zabbix-server-mysql:latest
     container_name: zabbix-server
@@ -615,38 +623,40 @@ services:
     networks:
       - sn-network
   
-  zabbix-web:
-    image: zabbix/zabbix-web-nginx-mysql:latest
-    container_name: zabbix-web
-    depends_on:
-      - zabbix-server
+#  zabbix-agent:
+#    image: zabbix/zabbix-agent:latest
+#    container_name: zabbix-agent
+#    depends_on:
+#      - zabbix-server
+#    environment:
+#      #ZBX_SERVER_HOST: zabbix-server
+#      #ZBX_SERVER_PORT: 10051
+#      ZBX_HOSTNAME: socialnetwork-api-1
+#      ZBX_SERVER: zabbix-server
+#      ZBX_SERVER_ACTIVE: zabbix-server
+#      ZBX_LISTENPORT: 10050
+#      ZBX_LISTENIP: 0.0.0.0
+#      ZBX_ALLOWROOT: "1"
+#    ports:
+#      - "10050:10050"
+#    networks:
+#      - sn-network
+
+  zabbix-db:
+    image: mysql:8.0
+    container_name: zabbix-db
     environment:
-      ZBX_SERVER_HOST: zabbix-server
-      DB_SERVER_HOST: zabbix-db
       MYSQL_DATABASE: zabbix
       MYSQL_USER: admin
       MYSQL_PASSWORD: "!QAZ2wsx"
-    ports:
-      - "9091:8080"
-    networks:
-      - sn-network
-  
-  zabbix-agent:
-    image: zabbix/zabbix-agent:latest
-    container_name: zabbix-agent
-    depends_on:
-      - zabbix-server
-    environment:
-      #ZBX_SERVER_HOST: zabbix-server
-      #ZBX_SERVER_PORT: 10051
-      ZBX_HOSTNAME: zabbix-agent
-      ZBX_SERVER: zabbix-server
-      ZBX_SERVER_ACTIVE: zabbix-server
-      ZBX_LISTENPORT: 10050
-      ZBX_LISTENIP: 0.0.0.0
-      ZBX_ALLOWROOT: "1"
-    ports:
-      - "10050:10050"
+      MYSQL_ROOT_PASSWORD: root_pass
+    command: [
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_bin",
+      "--log-bin-trust-function-creators=1"
+    ]
+    volumes:
+      - zabbix-db-data:/var/lib/mysql
     networks:
       - sn-network
 

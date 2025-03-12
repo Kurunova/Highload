@@ -3,6 +3,8 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+RUN apt-get update && apt-get install -y zabbix-agent
+
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -19,4 +21,6 @@ RUN dotnet publish "SocialNetworkApi.csproj" -c $BUILD_CONFIGURATION -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "SocialNetworkApi.dll"]
+#ENTRYPOINT ["dotnet", "SocialNetworkApi.dll"]
+
+CMD service zabbix-agent start && dotnet SocialNetworkApi.dll
