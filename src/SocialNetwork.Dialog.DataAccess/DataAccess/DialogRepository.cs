@@ -27,6 +27,24 @@ public class DialogRepository : BaseRepository, IDialogRepository
 		}, cancellationToken);
 	}
 
+	public async Task<DialogMessage?> GetMessageByIdAsync(long messageId, CancellationToken cancellationToken)
+	{
+		var sql = @"
+            SELECT message_id as MessageId, 
+                from_user_id AS From, 
+                to_user_id AS To, 
+                text, 
+                sent_at AS SentAt, 
+                is_read AS IsRead
+            FROM dialog_messages
+            WHERE id = @MessageId
+            ORDER BY sent_at";
+
+		var messages = await QueryAsync<DialogMessage>(sql, new { MessageId = messageId }, cancellationToken);
+
+		return messages.FirstOrDefault();
+	}
+	
 	public async Task<IEnumerable<DialogMessage>> GetMessagesBetweenUsersAsync(long userId1, long userId2, CancellationToken cancellationToken)
 	{
 		var dialogId = userId1 < userId2
@@ -34,11 +52,24 @@ public class DialogRepository : BaseRepository, IDialogRepository
 			: $"{userId2}_{userId1}";
 		
 		var sql = @"
-            SELECT from_user_id AS From, to_user_id AS To, text, sent_at AS SentAt
+            SELECT message_id as MessageId, 
+                from_user_id AS From, 
+                to_user_id AS To, 
+                text, 
+                sent_at AS SentAt, 
+                is_read AS IsRead
             FROM dialog_messages
             WHERE dialog_id = @DialogId
             ORDER BY sent_at";
 
 		return await QueryAsync<DialogMessage>(sql, new { DialogId = dialogId }, cancellationToken);
+	}
+	
+	public async Task<bool> UpdateMessageReadStatusAsync(long messageId, bool isRead, CancellationToken cancellationToken)
+	{
+		const string sql = "UPDATE dialog_messages SET is_read = @IsRead WHERE id = @MessageId";
+		var parameters = new { MessageId = messageId, IsRead = isRead };
+
+		return await ExecuteAsync(sql, parameters, cancellationToken);
 	}
 }

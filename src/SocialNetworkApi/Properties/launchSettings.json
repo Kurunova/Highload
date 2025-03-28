@@ -19,6 +19,7 @@
 //        "DialogDbSettings__TarantoolDbSettings__Port": "3301",
 //        "DialogDbSettings__TarantoolDbSettings__SpaceName": "dialog_messages",
         "DialogService__GrpcConnectionString": "http://localhost:6011/",
+        "CountersService__GrpcConnectionString": "http://localhost:6021/",
         "Jwt__Key": "vsjq3w7QS+5deEzxVBrEGTwUC58tgxt9FVK3QUYR6pM=",
         "Jwt__Issuer": "socialnetwork.com",
         "Jwt__Audience": "socialnetwork.com",

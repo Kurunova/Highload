@@ -1,11 +1,10 @@
 ﻿using Serilog;
-using SocialNetwork.Dialog.DataAccess.Extensions;
-using SocialNetwork.Dialog.Extensions;
-using SocialNetwork.Dialog.Grpc.Services;
+using SocialNetwork.Counters.Grpc.DataAccess;
+using SocialNetwork.Counters.Grpc.Services;
 
-namespace SocialNetwork.Dialog.Grpc;
+namespace SocialNetwork.Counters.Grpc;
 
-public sealed class Startup
+public class Startup
 {
 	private readonly IConfiguration _configuration;
 
@@ -21,8 +20,8 @@ public sealed class Startup
 
 	public void ConfigureServices(IServiceCollection serviceCollection)
 	{
-		serviceCollection.AddDialogDatabase(_configuration);
-		serviceCollection.AddDialog(_configuration);
+		serviceCollection.AddCountersDatabase(_configuration);
+		// serviceCollection.AddCounters(_configuration);
 		
 		serviceCollection.AddGrpc(options =>
 		{
@@ -38,9 +37,7 @@ public sealed class Startup
 
 		applicationBuilder.UseEndpoints(endpointRouteBuilder =>
 		{
-			endpointRouteBuilder.MapGrpcService<DialogServiceControllerV1>();
-			endpointRouteBuilder.MapGrpcService<DialogServiceControllerV2>();
-			endpointRouteBuilder.MapGrpcService<DialogServiceControllerV3>();
+			endpointRouteBuilder.MapGrpcService<CountersServiceControllerV1>();
 			endpointRouteBuilder.MapGrpcReflectionService();
 			endpointRouteBuilder.MapGet("", () => "Hello Wold!");
 		});
