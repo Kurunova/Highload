@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+using Prometheus;
 using Serilog;
 using SocialNetwork.Application.Extensions;
 using SocialNetwork.DataAccess.Extensions;
@@ -101,6 +102,8 @@ public sealed class Startup
 				}
 			});
 		});
+		
+		serviceCollection.AddSingleton<MetricServer>(new MetricServer(port: 1234));
 	}
 
 	public void Configure(IApplicationBuilder applicationBuilder)
@@ -117,10 +120,14 @@ public sealed class Startup
 		applicationBuilder.UseSwagger();
 		applicationBuilder.UseSwaggerUI();
 		
+		applicationBuilder.UseMiddleware<MetricsMiddleware>();
+		applicationBuilder.UseHttpMetrics(); 
+		
 		applicationBuilder.UseEndpoints(endpointRouteBuilder =>
 		{
 			endpointRouteBuilder.MapControllers();
 			endpointRouteBuilder.MapHub<PostFeedHub>("/post/feed/posted"); // Маршрут для WebSocket
+			endpointRouteBuilder.MapMetrics(); 
 		});
 	}
 }
